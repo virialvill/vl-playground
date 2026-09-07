@@ -1,0 +1,12 @@
+Notas — vl-playground
+=====================
+
+Repositorio personal de pruebas y experimentos.
+
+Creado: 2026-09-07
+Autor: Viridiana Villegas
+
+Pendientes
+----------
+- [ ] Definir qué experimentos van aquí
+- [ ] Agregar estructura de carpetas cuando haga falta
