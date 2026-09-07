@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Intake Forms · Recruitment Tracker</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/tokens.css?v=1">
+  <link rel="stylesheet" href="assets/css/app.css?v=1">
+</head>
+<body>
+  <main class="page stack" id="page"></main>
+
+  <script src="assets/js/data.js?v=1"></script>
+  <script src="assets/js/app.js?v=1"></script>
+  <script>
+  (function () {
+    const D = window.VLTData;
+    const { esc, icon, badge, pageHeader, dataTable, formatDate } = VLT;
+
+    document.getElementById("page").innerHTML = `
+      ${pageHeader({ title: "Intake Forms",
+                     breadcrumb: [{ label: "Home", href: "dashboard.html" }, { label: "Intake Forms" }] })}
+
+      <section class="card card--pad">
+        <div class="table-toolbar">
+          <div class="field">
+            <span class="field__label">Search Intake Forms</span>
+            <span class="search">${icon("search", 16)}
+              <input class="input" id="search" type="search" placeholder="Enter form id, deal or client">
+            </span>
+          </div>
+          <div class="table-toolbar__spacer"></div>
+          <button class="btn btn--primary" type="button" id="new-form">${icon("plus", 16)} New Intake Form</button>
+        </div>
+        <div id="table"></div>
+      </section>`;
+
+    const tone = { Completed: "success", Pending: "warning", "In Review": "primary" };
+
+    const table = dataTable({
+      mount: document.getElementById("table"),
+      rows: D.intakeForms,
+      columns: [
+        { key: "id", label: "Form ID", sortable: true },
+        { key: "deal", label: "Deal", sortable: true,
+          render: (r) => `<a class="cell-link" href="deal.html?tab=intake">${esc(r.deal)}</a>` },
+        { key: "client", label: "Client", sortable: true },
+        { key: "submitted", label: "Submitted", sortable: true, render: (r) => formatDate(r.submitted) },
+        { key: "status", label: "Status", sortable: true,
+          render: (r) => badge(r.status, tone[r.status] || "neutral") },
+        { key: "action", label: "Action", align: "right",
+          render: () => `<a class="icon-button" href="deal.html?tab=intake" aria-label="Ver formulario">${icon("eye", 16)}</a>` },
+      ],
+      pageSize: 10,
+      searchFn: (r, t) => (r.id + " " + r.deal + " " + r.client).toLowerCase().includes(t),
+    });
+
+    document.getElementById("search")
+      .addEventListener("input", (e) => table.search(e.target.value));
+
+    document.getElementById("new-form")
+      .addEventListener("click", () => VLT.toast("Alta de intake form — pendiente de diseño en Figma"));
+
+    VLT.init("intake");
+  })();
+  </script>
+</body>
+</html>

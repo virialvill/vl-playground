@@ -1,0 +1,328 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Agreement Creation · Recruitment Tracker</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/tokens.css?v=1">
+  <link rel="stylesheet" href="assets/css/app.css?v=1">
+</head>
+<body>
+  <main class="page stack" id="page"></main>
+
+  <!-- 2.1.1 Back Confirmation Dialog -->
+  <dialog class="modal modal--sm" id="back-dialog">
+    <div class="modal__inner">
+      <div class="modal__header"><h2 class="modal__title">Leave agreement creation?</h2></div>
+      <p class="muted">Used when abandoning an in-progress selection step. Your selection won’t be saved.</p>
+      <div class="modal__footer">
+        <button class="btn btn--neutral" type="button" data-close>Stay here</button>
+        <button class="btn btn--danger" type="button" id="confirm-back">Leave</button>
+      </div>
+    </div>
+  </dialog>
+
+  <!-- 2.2.1 Confirmation Dialog -->
+  <dialog class="modal modal--sm" id="confirm-dialog">
+    <div class="modal__inner">
+      <div class="modal__header"><h2 class="modal__title">Create this agreement?</h2></div>
+      <p class="muted">Used when the user might lose unsaved or in-progress data. Review the details before continuing.</p>
+      <div class="modal__footer">
+        <button class="btn btn--neutral" type="button" data-close>Review again</button>
+        <button class="btn btn--primary" type="button" id="confirm-create">Create Agreement</button>
+      </div>
+    </div>
+  </dialog>
+
+  <!-- 2.3.1 Error Message -->
+  <dialog class="modal modal--sm" id="error-dialog">
+    <div class="modal__inner">
+      <div class="modal__header"><h2 class="modal__title">Agreement creation failed</h2></div>
+      <p class="muted">This error dialog appears when the agreement creation process fails due to a backend
+        or network issue. Please try again in a few minutes.</p>
+      <div class="modal__footer">
+        <button class="btn btn--neutral" type="button" data-close>Close</button>
+        <button class="btn btn--primary" type="button" id="retry-create">Try again</button>
+      </div>
+    </div>
+  </dialog>
+
+  <script src="assets/js/data.js?v=1"></script>
+  <script src="assets/js/app.js?v=1"></script>
+  <script>
+  (function () {
+    const D = window.VLTData;
+    const { esc, icon, pageHeader, modal, toast, param } = VLT;
+
+    const dealId = param("id", D.dealDetail.id);
+    const deal = D.deals.find((d) => d.id === dealId) || D.deals[0];
+
+    let step = 1;
+    let selectedVA = D.proposalVAs[0];
+
+    const header = pageHeader({
+      title: deal.name,
+      breadcrumb: [{ label: "Home", href: "dashboard.html" }, { label: "Deals", href: "deals.html" }],
+    });
+
+    const stepper = () => {
+      const state = (n) => (step > n ? "done" : step === n ? "active" : "todo");
+      const bullet = (n, label) => `
+        <div class="step" data-state="${state(n)}">
+          <span class="step__bullet">${step > n ? icon("check", 16) : n}</span>
+          <span class="step__label">${label}</span>
+        </div>`;
+      return `<div class="stepper">
+        ${bullet(1, "VA Selection")}<div class="step-line"></div>${bullet(2, "Agreement Details")}
+      </div>`;
+    };
+
+    const opts = (list) => list.map((o) => `<option>${esc(o)}</option>`).join("");
+
+    const field = (label, control, { required = true } = {}) => `
+      <label class="field">
+        <span class="field__label">${esc(label)}${required ? '<span class="req">*</span>' : ""}</span>
+        ${control}
+      </label>`;
+
+    const money = (name, value) => `<input class="input" name="${name}" value="${esc(value)}" inputmode="decimal">`;
+
+    /* --- Paso 1: selección de VA -------------------------------------------- */
+    const stepOne = () => `
+      <div class="card card--pad">
+        ${stepper()}
+        <div style="text-align:center;max-width:640px;margin:0 auto 24px">
+          <h2 class="h2" style="margin-bottom:8px">Select a VA to create the Agreement for</h2>
+          <p class="muted">Select the VA to proceed with creating a tailored agreement based on their role,
+            the Client’s selected options, and the VA’s details.</p>
+        </div>
+
+        <div class="choice-list" role="radiogroup" aria-label="VA">
+          ${D.proposalVAs.map((va) => `
+            <label class="choice" data-selected="${va.id === selectedVA.id}">
+              <span class="avatar">${icon("user", 16)}</span>
+              <span>${esc(va.name)}</span>
+              <input type="radio" name="va" value="${esc(va.id)}" ${va.id === selectedVA.id ? "checked" : ""}>
+            </label>`).join("")}
+        </div>
+
+        <div style="display:flex;justify-content:space-between;gap:12px;max-width:560px;margin:32px auto 0">
+          <button class="btn btn--outline" type="button" id="cancel-step1">Cancel</button>
+          <button class="btn btn--primary" type="button" id="next-step1">Next</button>
+        </div>
+      </div>`;
+
+    /* --- Paso 2: datos del agreement ---------------------------------------- */
+    const stepTwo = () => `
+      <div class="card card--pad stack">
+        ${stepper()}
+
+        <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+          <h2 class="h2">Agreement Setup for
+            <span style="color:var(--color-primary)">${esc(selectedVA.name)}</span></h2>
+          <div class="table-toolbar__spacer"></div>
+          <button class="btn btn--outline" type="button" id="cancel-step2">Cancel</button>
+          <button class="btn btn--primary" type="button" id="create-agreement">Create Agreement</button>
+        </div>
+
+        <form id="agreement-form" class="stack" novalidate>
+          <div class="form-section">
+            <h3 class="form-section__title">Agreement Information</h3>
+            <div class="form-grid">
+              ${field("Agreement Name", '<input class="input" name="agrname" value="VL-Agreement-Abacus Analytics-Jefferson C.-2024-06-25 14-57-22">')}
+              ${field("Agreement Number", '<input class="input" name="agrnumber" value="2024-06-25-ABAJEFJEFZCO1">')}
+              ${field("Agreement Type", `<select class="select" name="agrtype">${opts(D.options.agreementType)}</select>`)}
+              ${field("Deal", `<input class="input" name="deal" value="${esc(deal.id)}" disabled>`, { required: false })}
+            </div>
+          </div>
+
+          <div class="form-section">
+            <h3 class="form-section__title">Financial Details</h3>
+            <div class="form-grid">
+              ${field("Deposit Amount", money("deposit", "10.00"))}
+              ${field("Client Initial Rate/Hr", money("clientinitial", "9.00"))}
+              ${field("VA Initial Rate/Hr", money("vainitial", "9.00"))}
+              ${field("Client Rate 10 - 20 Hrs", money("client1020", "10.00"))}
+              ${field("Client Rate 21 - 31 Hrs", money("client2131", "9.00"))}
+              ${field("Client Rate 31 - 40 Hrs", money("client3140", "17"))}
+              ${field("VA Rate 10 - 20 Hrs", money("va1020", "10.00"))}
+              ${field("VA Rate 21 - 31 Hrs", money("va2131", "9.00"))}
+              ${field("VA Rate 31 - 40 Hrs", money("va3140", "17"))}
+            </div>
+          </div>
+
+          <div class="form-section">
+            <h3 class="form-section__title">Client Information</h3>
+            <div class="form-grid form-grid--2">
+              ${field("Customer Company", '<input class="input" name="company" value="Candice Salcedo Insurance Agency Inc">')}
+              ${field("Customer Name", '<input class="input" name="custname" value="Candice Salcedo">')}
+              ${field("Customer Email", '<input class="input" name="custmail" type="email" value="candice@candicesalcedo.com">')}
+              ${field("Client Industry", '<input class="input" name="clientindustry" value="Law Firm">')}
+              ${field("Customer Secondary Industry", '<input class="input" name="secindustry" value="-">', { required: false })}
+              ${field("Client Hubspot Contact ID", '<input class="input" name="hubspotid" value="20955135863">')}
+            </div>
+          </div>
+
+          <div class="form-section">
+            <h3 class="form-section__title">VA’s Information</h3>
+            <div class="form-grid form-grid--2">
+              ${field("VA Common Name", '<input class="input" name="vacommon" value="Sofia M">')}
+              ${field("VA Legal Name", `<input class="input" name="valegal" value="${esc(selectedVA.name)}">`)}
+              ${field("VA Hubspot Contact ID", '<input class="input" name="vahubspot" value="3405">')}
+              ${field("VA Country", `<select class="select" name="vacountry">${opts(D.options.country)}</select>`)}
+            </div>
+            <div class="form-grid">
+              ${field("VA Phone Number", '<input class="input" name="vaphone" value="20955135863">')}
+              ${field("VA Telegram Username", '<input class="input" name="vatelegram" value="@SofiaMSanchez">')}
+              ${field("VA Email", '<input class="input" name="vamail" type="email" value="sofia.morales@example.com">')}
+            </div>
+          </div>
+
+          <div class="form-section">
+            <h3 class="form-section__title">Job Details</h3>
+            <div class="form-grid form-grid--2">
+              ${field("VA Job Standard Role", `<select class="select" name="stdrole"><option value="">Select an option</option>${opts(D.primaryRoles)}</select>`)}
+              ${field("VA’s Client Final Job Title", '<input class="input" name="finaltitle" value="Sales Assistants">')}
+              ${field("VA Tier", `<select class="select" name="vatier"><option value="">Select an option</option>${opts(D.options.vaLevel)}</select>`)}
+              ${field("Initial Hours per Week", '<input class="input" name="inithours" value="25">')}
+            </div>
+          </div>
+
+          <div class="form-section">
+            <h3 class="form-section__title">Administrative Details</h3>
+            <div class="form-grid form-grid--2">
+              ${field("SAM Email", '<input class="input" name="samemail" value="sofia.hernandez@virtuallatinos.com" disabled>')}
+              ${field("SAM ID", '<input class="input" name="samid" value="4431" disabled>')}
+              ${field("Proposify Template", '<select class="select" name="proposify"><option value="">Select an option</option><option>Standard</option><option>Enterprise</option></select>', { required: false })}
+              ${field("Signwell Template", '<input class="input" name="signwell" value="Sales Assistants">')}
+            </div>
+          </div>
+
+          <div class="form-section">
+            <h3 class="form-section__title">Additional Job Details</h3>
+            <div class="form-grid">
+              ${field("Expected Start Date", '<input class="input" name="startdate" type="date" value="2025-04-10">')}
+              ${field("VL Profit 10 - 20 Hrs", money("profit1020", "10.00"))}
+              ${field("VL Profit 21 - 31 Hrs", money("profit2131", "9.00"))}
+              ${field("VL Profit 31 - 40 Hrs", money("profit3140", "17"))}
+            </div>
+          </div>
+        </form>
+      </div>`;
+
+    /* --- Paso 3: mensaje de éxito -------------------------------------------- */
+    const stepThree = () => `
+      <div class="card card--pad">
+        <div class="empty-state">
+          <div class="empty-state__art">
+            <svg width="120" height="120" viewBox="0 0 120 120" fill="none" aria-hidden="true">
+              <circle cx="60" cy="60" r="52" fill="#2ea95c26"/>
+              <circle cx="60" cy="60" r="36" fill="#2ea95c"/>
+              <path d="m46 61 10 10 20-22" stroke="#fff" stroke-width="5"
+                    stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <p class="empty-state__title">Agreement created successfully</p>
+          <p class="empty-state__text">
+            All finalized agreements are listed below. Agreements will appear here once
+            they’ve been reviewed and processed.
+          </p>
+          <a class="btn btn--primary" href="deal.html?id=${esc(deal.id)}&tab=agreement">Go to Agreements</a>
+        </div>
+      </div>`;
+
+    /* --- Render ---------------------------------------------------------------- */
+    const tabsBar = `
+      <div class="tabs" role="tablist" aria-label="Deal">
+        <a class="tab" href="deal.html?id=${esc(deal.id)}&tab=details">Deal Details</a>
+        <a class="tab" href="deal.html?id=${esc(deal.id)}&tab=intake">Intake Form</a>
+        <a class="tab" href="deal.html?id=${esc(deal.id)}&tab=job">Job Details</a>
+        <a class="tab" href="deal.html?id=${esc(deal.id)}&tab=apps">Proposal VAs</a>
+        <span class="tab" aria-selected="true">Agreement creation</span>
+      </div>`;
+
+    function render() {
+      const body = step === 1 ? stepOne() : step === 2 ? stepTwo() : stepThree();
+      document.getElementById("page").innerHTML = `${header}${tabsBar}
+        <div style="padding-top:24px">${body}</div>`;
+      wire();
+    }
+
+    function wire() {
+      if (step === 1) {
+        VLT.$$(".choice").forEach((choice) => {
+          choice.addEventListener("click", () => {
+            const id = choice.querySelector("input").value;
+            selectedVA = D.proposalVAs.find((v) => v.id === id);
+            VLT.$$(".choice").forEach((c) =>
+              c.dataset.selected = String(c.querySelector("input").value === id));
+          });
+        });
+        document.getElementById("next-step1").addEventListener("click", () => { step = 2; render(); });
+        document.getElementById("cancel-step1").addEventListener("click", backDialog.open);
+      }
+
+      if (step === 2) {
+        document.getElementById("cancel-step2").addEventListener("click", backDialog.open);
+        document.getElementById("create-agreement").addEventListener("click", () => {
+          const form = document.getElementById("agreement-form");
+          const missing = Array.from(form.querySelectorAll(".field")).filter((f) => {
+            if (!f.querySelector(".req")) return false;
+            const c = f.querySelector("input, select, textarea");
+            return c && !c.disabled && !c.value.trim();
+          });
+          if (missing.length) {
+            toast(`Faltan ${missing.length} campo(s) obligatorio(s)`, "error");
+            missing[0].querySelector("input, select, textarea").focus();
+            return;
+          }
+          confirmDialog.open();
+        });
+      }
+    }
+
+    /* --- Diálogos ------------------------------------------------------------- */
+    const backDialog = modal("back-dialog");
+    const confirmDialog = modal("confirm-dialog");
+    const errorDialog = modal("error-dialog");
+
+    document.getElementById("confirm-back").addEventListener("click", () => {
+      backDialog.close();
+      location.href = `deal.html?id=${encodeURIComponent(deal.id)}&tab=agreement`;
+    });
+
+    function submitAgreement() {
+      const btn = document.getElementById("create-agreement");
+      if (btn) { btn.disabled = true; btn.textContent = "Creating…"; }   // 2.2.1 Loading Button
+      setTimeout(() => {
+        // El prototipo siempre tiene éxito; el diálogo de error se puede abrir
+        // manualmente con ?fail=1 para revisar ese estado del diseño.
+        if (param("fail") === "1") {
+          if (btn) { btn.disabled = false; btn.textContent = "Create Agreement"; }
+          errorDialog.open();
+          return;
+        }
+        step = 3;
+        render();
+        toast("Agreement creado", "success");
+      }, 1100);
+    }
+
+    document.getElementById("confirm-create").addEventListener("click", () => {
+      confirmDialog.close();
+      submitAgreement();
+    });
+    document.getElementById("retry-create").addEventListener("click", () => {
+      errorDialog.close();
+      step = 3; render();
+    });
+
+    render();
+    VLT.init("deals");
+  })();
+  </script>
+</body>
+</html>
