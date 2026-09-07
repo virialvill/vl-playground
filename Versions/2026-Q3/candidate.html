@@ -1,0 +1,372 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>VA Profile · Recruitment Tracker 2026-Q3</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/tokens.css?v=1">
+  <link rel="stylesheet" href="assets/css/app.css?v=1">
+</head>
+<body>
+  <main class="page stack" id="page"></main>
+
+  <dialog class="modal modal--sm" id="note-dialog">
+    <form class="modal__inner" method="dialog">
+      <div class="modal__header">
+        <h2 class="modal__title">Add Note</h2>
+        <button class="modal__close" type="button" data-close aria-label="Cerrar">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+               stroke-width="1.7" stroke-linecap="round"><path d="m6 6 12 12M18 6 6 18"/></svg>
+        </button>
+      </div>
+      <label class="field">
+        <span class="field__label">Note</span>
+        <textarea class="textarea" id="note-text" placeholder="Write your note here..."></textarea>
+      </label>
+      <div class="modal__footer">
+        <button class="btn btn--neutral" type="button" data-close>Cancel</button>
+        <button class="btn btn--primary" type="button" id="save-note">Save Note</button>
+      </div>
+    </form>
+  </dialog>
+
+  <script src="assets/js/data.js?v=1"></script>
+  <script src="assets/js/app.js?v=1"></script>
+  <script>
+  (function () {
+    const D = window.VLTData;
+    const C = D.candidate;
+    const { esc, icon, badge, avatar, dataTable, modal, toast, param } = VLT;
+
+    const vaId = param("va", "va-1");
+    const record = D.applications.find((a) => a.id === vaId) || D.applications[0];
+    const displayName = record.name;
+
+    /* --- Cabecera del perfil ------------------------------------------------ */
+    const profileHeader = `
+      <header class="card" style="display:grid;justify-items:center;gap:8px;padding:24px">
+        <span class="avatar avatar--brand" style="width:48px;height:48px;font-size:9px">virtual<br>Latinos</span>
+        <a href="#" class="text-sm">Click to view full image</a>
+        <h1 class="h1">${esc(displayName)}</h1>
+        ${badge(C.type, "info")}
+      </header>`;
+
+    /* --- Tab 1: Job Application --------------------------------------------- */
+    const jobApplicationPanel = `
+      <div class="split">
+        <div class="stack">
+          <section class="card card--pad">
+            <h2 class="section-title">Related Records</h2>
+            <div class="stack-s">
+              ${C.relatedRecords.map((r) => `
+                <a class="link-external" href="${r.href}">${esc(r.label)} ${icon("external", 14)}</a>`).join("")}
+            </div>
+          </section>
+
+          <section class="card card--pad">
+            <div style="display:flex;align-items:center;justify-content:space-between;gap:12px"
+                 class="section-title">
+              <span>Process &amp; Evaluation</span>
+              <button class="icon-button icon-button--quiet" type="button" id="edit-process"
+                      aria-label="Editar">${icon("pencil", 16)}</button>
+            </div>
+            <div class="stack-s">
+              ${C.process.map((p) => `
+                <div>
+                  <div class="detail__label">${esc(p.label)}</div>
+                  <div class="detail__value">${esc(p.value)}</div>
+                </div>`).join("")}
+            </div>
+          </section>
+        </div>
+
+        <section class="card card--pad">
+          <h2 class="section-title">VA Job Application</h2>
+          <div class="qa-grid">
+            ${C.jobApplication.map((qa) => `
+              <div>
+                <p class="qa__q">${esc(qa.q)}</p>
+                <p class="qa__a">${esc(qa.a)}</p>
+              </div>`).join("")}
+          </div>
+          <p style="margin-top:24px">
+            <a class="link-external" href="#">Portfolio URL ${icon("external", 14)}</a>
+          </p>
+        </section>
+      </div>`;
+
+    /* --- Tab 2: Assessment Data ---------------------------------------------- */
+    const assessmentPanel = `
+      <div class="card card--pad">
+        <div class="table-toolbar">
+          <div class="field">
+            <span class="field__label">Assessment Title</span>
+            <span class="search">${icon("search", 16)}
+              <input class="input" id="as-search" type="search" placeholder="Enter assessment title">
+            </span>
+          </div>
+          <label class="field"><span class="field__label">Assessment Role</span>
+            <select class="select" id="as-role" style="width:180px">
+              <option value="">Starter</option>${D.primaryRoles.map((r) => `<option>${esc(r)}</option>`).join("")}
+            </select></label>
+          <label class="field"><span class="field__label">Assessment Tier</span>
+            <select class="select" id="as-tier" style="width:180px">
+              <option value="">Starter</option><option>Starter</option><option>Advanced</option><option>Professional</option>
+            </select></label>
+          <label class="field"><span class="field__label">Assessment Status</span>
+            <select class="select" id="as-status" style="width:180px">
+              <option value="">Starter</option><option>Passed</option><option>Failed</option>
+            </select></label>
+        </div>
+        <div id="as-table"></div>
+      </div>`;
+
+    /* --- Tab 3: Profile Details ----------------------------------------------- */
+    const accordion = (title, body, open = true) => `
+      <section class="card card--pad accordion">
+        <button class="accordion__head" type="button" aria-expanded="${open}">
+          <span>${esc(title)}</span>${icon("chevronDown", 18)}
+        </button>
+        <div class="accordion__body" ${open ? "" : "hidden"}>${body}</div>
+      </section>`;
+
+    const profileDetailsPanel = `
+      <div class="split">
+        <div class="stack">
+          <section class="card card--pad">
+            <h2 class="section-title">Personal &amp; Contact Information</h2>
+            <ul class="contact-list">
+              ${C.contact.map((c) => `
+                <li>${icon(c.icon === "external" ? "external" : c.icon, 16)}
+                  ${c.href ? `<a href="${c.href}">${esc(c.label)}</a>` : esc(c.label)}</li>`).join("")}
+            </ul>
+          </section>
+
+          <section class="card card--pad">
+            <h2 class="section-title">Professional Status</h2>
+            <div class="stat-list">
+              ${C.professionalStatus.map((s) => `
+                <div class="stat-list__row">
+                  <span class="muted">${esc(s.label)}</span>
+                  ${s.badge ? badge(s.badge.text, s.badge.tone) : `<span>${esc(s.value)}</span>`}
+                </div>`).join("")}
+            </div>
+          </section>
+        </div>
+
+        <div class="stack">
+          ${accordion("Cover Letter",
+            C.coverLetter.map((p) => `<p class="detail__value" style="margin-bottom:12px">${esc(p)}</p>`).join(""))}
+
+          ${accordion("Industries",
+            `<div class="chip-list">${C.industries.map((i) => `<span class="chip">${esc(i)}</span>`).join("")}</div>`)}
+
+          ${accordion("Roles", `
+            <div class="detail-grid detail-grid--2">
+              <div>
+                <p class="label" style="margin-bottom:12px">Interested Roles</p>
+                <div class="chip-list" style="flex-direction:column;align-items:flex-start">
+                  ${C.interestedRoles.map((r) => `<span class="chip">${esc(r)}</span>`).join("")}
+                </div>
+              </div>
+              <div>
+                <p class="label" style="margin-bottom:12px">Roles</p>
+                <div class="stat-list">
+                  ${C.roles.map((r) => `
+                    <div class="stat-list__row" style="border-bottom:1px solid var(--border-muted);padding-bottom:8px">
+                      <span>${esc(r.name)}</span><span class="muted">${esc(r.years)}</span>
+                    </div>`).join("")}
+                </div>
+              </div>
+            </div>`)}
+
+          ${accordion("Skills", `
+            <div class="detail-grid detail-grid--2">
+              <div class="stack-s">
+                <p class="label">Skills</p>
+                <span class="search" style="max-width:100%">${icon("search", 16)}
+                  <input class="input" type="search" placeholder="Search Skills" data-chip-filter="skills"></span>
+                <div class="chip-list" data-chip-group="skills">
+                  ${C.skills.map((s) => `<span class="chip">${esc(s)}</span>`).join("")}
+                </div>
+              </div>
+              <div class="stack-s">
+                <p class="label">Software Skills</p>
+                <span class="search" style="max-width:100%">${icon("search", 16)}
+                  <input class="input" type="search" placeholder="Search Software Skills" data-chip-filter="software"></span>
+                <div class="chip-list" data-chip-group="software">
+                  ${C.softwareSkills.map((s) => `<span class="chip">${esc(s)}</span>`).join("")}
+                </div>
+              </div>
+            </div>`)}
+        </div>
+      </div>`;
+
+    /* --- Tab 4: Other Jobs ----------------------------------------------------- */
+    const fact = (iconName, label, value) => `
+      <div>
+        <div class="job-fact__label">${icon(iconName, 15)} ${esc(label)}</div>
+        <div class="job-fact__value">${esc(value)}</div>
+      </div>`;
+
+    const otherJobsPanel = `
+      <div class="job-card-grid">
+        ${D.otherJobs.map((j) => `
+          <article class="card job-card">
+            <div class="job-card__head">
+              <span class="job-card__title">${esc(j.title)}</span>
+              ${badge(j.stage, "primary")}
+            </div>
+            <div class="chip-list">
+              ${j.tags.map((t) => badge(t.text, t.tone)).join("")}
+            </div>
+            <div class="job-card__body">
+              ${fact("user", "Role", j.role)}
+              ${fact("calendar", "Delivery Date", j.delivery)}
+              ${fact("dollar", "Client Rate", j.rate)}
+              ${fact("clock", "Hours/week", j.hours)}
+              ${fact("user", "Agent", j.agent)}
+              ${fact("users", "SAM", j.sam)}
+              ${fact("building", "Company", j.company)}
+            </div>
+          </article>`).join("")}
+      </div>`;
+
+    /* --- Tab 5: Notes ----------------------------------------------------------- */
+    const notesPanel = `
+      <div class="stack">
+        <div class="table-toolbar">
+          <div class="field">
+            <span class="field__label">Search Note</span>
+            <span class="search">${icon("search", 16)}
+              <input class="input" id="note-search" type="search" placeholder="Enter note name">
+            </span>
+          </div>
+          <div class="table-toolbar__spacer"></div>
+          <button class="btn btn--primary" type="button" id="add-note">Add Note</button>
+        </div>
+        <h2 class="h2">All Notes</h2>
+        <div class="note-grid" id="note-grid"></div>
+      </div>`;
+
+    /* --- Montaje ---------------------------------------------------------------- */
+    const TABS = [
+      { id: "t-app",     label: "Job Application",  panel: jobApplicationPanel },
+      { id: "t-assess",  label: "Assessment Data",  panel: assessmentPanel },
+      { id: "t-profile", label: "Profile Details",  panel: profileDetailsPanel },
+      { id: "t-other",   label: "Other Jobs",       panel: otherJobsPanel },
+      { id: "t-notes",   label: "Notes",            panel: notesPanel },
+    ];
+    const wanted = param("tab") ? "t-" + param("tab") : "t-app";
+
+    document.getElementById("page").innerHTML = `
+      ${profileHeader}
+      <div data-tabs>
+        <div class="tabs" role="tablist">
+          ${TABS.map((t) => `
+            <button class="tab" role="tab" type="button" data-tab="${t.id}"
+                    aria-selected="${t.id === wanted}">${esc(t.label)}</button>`).join("")}
+        </div>
+        ${TABS.map((t) => `
+          <div class="tab-panel" id="${t.id}" role="tabpanel" style="padding-top:24px"
+               ${t.id === wanted ? "" : "hidden"}>${t.panel}</div>`).join("")}
+      </div>`;
+
+    /* --- Assessments -------------------------------------------------------- */
+    const rows = D.assessments.map((a, i) => ({ id: "as-" + i, ...a }));
+    const asTable = dataTable({
+      mount: document.getElementById("as-table"),
+      rows,
+      pageSize: 10,
+      searchFn: (r, t) => r.title.toLowerCase().includes(t),
+      columns: [
+        { key: "title", label: "Assessment Title", sortable: true },
+        { key: "tier", label: "Assessment Tier", sortable: true },
+        { key: "score", label: "Assessment Score", sortable: true, render: (r) => `${r.score}%` },
+        { key: "status", label: "Assessment Status", sortable: true },
+        { key: "link", label: "Assessment Report Link",
+          render: () => `<a class="link-external" href="#">Link ${icon("external", 13)}</a>` },
+      ],
+    });
+
+    document.getElementById("as-search")
+      .addEventListener("input", (e) => asTable.search(e.target.value));
+
+    const applyAsFilters = () => {
+      const tier = document.getElementById("as-tier").value;
+      const status = document.getElementById("as-status").value;
+      asTable.setRows(rows.filter((r) =>
+        (!tier || r.tier === tier) && (!status || r.status === status)));
+    };
+    ["as-tier", "as-status"].forEach((id) =>
+      document.getElementById(id).addEventListener("change", applyAsFilters));
+
+    /* --- Chips filtrables ---------------------------------------------------- */
+    VLT.$$("[data-chip-filter]").forEach((input) => {
+      input.addEventListener("input", () => {
+        const group = VLT.$(`[data-chip-group="${input.dataset.chipFilter}"]`);
+        const term = input.value.toLowerCase();
+        VLT.$$(".chip", group).forEach((chip) => {
+          chip.style.display = chip.textContent.toLowerCase().includes(term) ? "" : "none";
+        });
+      });
+    });
+
+    /* --- Notas ---------------------------------------------------------------- */
+    let notes = D.notes.slice();
+    const grid = document.getElementById("note-grid");
+
+    function renderNotes(term = "") {
+      const list = notes.filter((n) => n.title.toLowerCase().includes(term.toLowerCase()));
+      grid.innerHTML = list.length ? list.map((n) => `
+        <article class="note" data-note="${esc(n.id)}">
+          <div class="note__head">
+            <span class="note__title">${esc(n.title)}</span>
+            <button class="icon-button icon-button--danger" type="button"
+                    data-delete="${esc(n.id)}" aria-label="Eliminar nota">${icon("trash", 14)}</button>
+          </div>
+          <span class="note__meta">${esc(n.date)}</span>
+          <span class="note__meta">Note created by<br>${esc(n.author)}</span>
+        </article>`).join("")
+        : `<p class="muted">No hay notas que coincidan con la búsqueda.</p>`;
+
+      VLT.$$("[data-delete]", grid).forEach((b) =>
+        b.addEventListener("click", () => {
+          notes = notes.filter((n) => n.id !== b.dataset.delete);
+          renderNotes(document.getElementById("note-search").value);
+          toast("Nota eliminada", "success");
+        }));
+    }
+    renderNotes();
+
+    document.getElementById("note-search")
+      .addEventListener("input", (e) => renderNotes(e.target.value));
+
+    const noteDlg = modal("note-dialog");
+    document.getElementById("add-note").addEventListener("click", noteDlg.open);
+    document.getElementById("save-note").addEventListener("click", () => {
+      const text = document.getElementById("note-text").value.trim();
+      if (!text) { toast("La nota no puede estar vacía", "error"); return; }
+      notes.unshift({
+        id: "note-" + Date.now(),
+        title: text.length > 22 ? text.slice(0, 22) + "..." : text,
+        date: new Date().toLocaleDateString("en-US"),
+        author: D.currentUser.email,
+      });
+      document.getElementById("note-text").value = "";
+      noteDlg.close();
+      renderNotes();
+      toast("Nota agregada", "success");
+    });
+
+    document.getElementById("edit-process")
+      .addEventListener("click", () => toast("Edición de Process & Evaluation — pendiente en Figma"));
+
+    VLT.init("deals");
+  })();
+  </script>
+</body>
+</html>

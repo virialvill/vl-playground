@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Log in · Recruitment Tracker 2026-Q1</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/tokens.css?v=1">
+  <link rel="stylesheet" href="assets/css/app.css?v=1">
+</head>
+<body>
+  <main class="login">
+    <div class="login__card">
+      <div class="wordmark" style="font-size:22px" aria-label="VirtualLatinos">
+        <span class="wordmark__light">virtual</span><span class="wordmark__dark">Latinos</span>
+      </div>
+
+      <h1 class="login__title">Welcome back to Recruitment Tracker!</h1>
+      <p class="login__subtitle">Use your Google account to continue.</p>
+
+      <button class="google-button" type="button" id="google-signin">
+        <span class="avatar avatar--brand" style="width:26px;height:26px;font-size:7px">virtual<br>Latinos</span>
+        <span class="google-button__text">
+          <span class="google-button__name">Sign in as Phoenix Account Name</span><br>
+          <span class="google-button__mail">phoenix@virtuallatinos.com</span>
+        </span>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#98a4ae"
+             stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="m6 9 6 6 6-6"/>
+        </svg>
+        <svg width="20" height="20" viewBox="0 0 48 48" aria-hidden="true">
+          <path fill="#4285F4" d="M45 24c0-1.6-.1-2.7-.4-4H24v7.5h12c-.2 2-1.5 5-4.4 7l6.8 5.3C42.4 36.2 45 30.7 45 24z"/>
+          <path fill="#34A853" d="M24 46c5.9 0 10.9-2 14.5-5.3l-6.9-5.3c-1.8 1.3-4.3 2.2-7.6 2.2-5.8 0-10.7-3.8-12.5-9.1l-7.1 5.5C8.1 41.1 15.4 46 24 46z"/>
+          <path fill="#FBBC05" d="M11.5 28.5c-.5-1.4-.8-2.9-.8-4.5s.3-3.1.7-4.5l-7.1-5.5C2.9 17 2 20.4 2 24s.9 7 2.4 10z"/>
+          <path fill="#EA4335" d="M24 10.6c3.3 0 5.5 1.4 6.8 2.6l5.9-5.8C33.1 4.1 29.1 2 24 2 15.4 2 8.1 6.9 4.4 14l7.1 5.5c1.8-5.3 6.7-8.9 12.5-8.9z"/>
+        </svg>
+      </button>
+    </div>
+  </main>
+
+  <script>
+    // El login es una simulación: no hay autenticación real detrás.
+    document.getElementById("google-signin").addEventListener("click", () => {
+      window.location.href = "dashboard.html";
+    });
+  </script>
+</body>
+</html>
