@@ -36,6 +36,10 @@ window.VLTData = (function () {
     "Executive Assistant",
   ];
 
+  const rtPods = ["ECO", "BAY", "ARC"];
+  const agents = ["Alexia López", "Carlos Rodríguez", "María López"];
+  const specialists = ["Alexander Rodriguez", "Ana González", "Luis Carlos Vanegas"];
+
   const dealOwners = [
     "No Owner",
     "Laura González",
@@ -46,23 +50,23 @@ window.VLTData = (function () {
 
   /* --- Deals -------------------------------------------------------------- */
   const deals = [
-    { id: "35395634262", name: "Administrative Assistant",          stage: "Lost",               delivery: "2025-04-28", role: "Software Engineer", owner: "Laura González", published: false, jobPosted: true  },
-    { id: "67238475692", name: "O'connor Law-Legaal Assistant",      stage: "Contracts Sent",     delivery: "2025-04-26", role: "Graphic Designer",  owner: "No Owner",        published: true,  jobPosted: true  },
-    { id: "94571238465", name: "Black & Associates - Sales",         stage: "Contracts Sent",     delivery: "2025-04-23", role: "Data Scientist",    owner: "No Owner",        published: true,  jobPosted: false },
-    { id: "58392367481", name: "Gian - Grasso",                      stage: "Quick Call",         delivery: "2025-04-18", role: "Product Manager",   owner: "Martin Vega",     published: false, jobPosted: false },
-    { id: "76294581342", name: "Black & Associates - Sales",         stage: "Quick Call",         delivery: "2025-04-16", role: "Customer Service",  owner: "Paula Castillo",  published: true,  jobPosted: true  },
-    { id: "98127365408", name: "Abacus Analytics",                   stage: "Hiring Survey",      delivery: "2025-04-14", role: "HR Manager",        owner: "No Owner",        published: false, jobPosted: false },
-    { id: "94571238466", name: "Black & Associates - Sales",         stage: "Job Posted",         delivery: "2025-04-07", role: "Data Scientist",    owner: "No Owner",        published: true,  jobPosted: true  },
-    { id: "98127365409", name: "Abacus Analytics",                   stage: "Lost",               delivery: "2025-04-01", role: "HR Manager",        owner: "No Owner",        published: true,  jobPosted: true  },
-    { id: "12345678901", name: "Skyline Innovations - Sales Deal",   stage: "Lost",               delivery: "2025-03-28", role: "Graphic Designer",  owner: "No Owner",        published: false, jobPosted: false },
-    { id: "23456789012", name: "Pinnacle Solutions - Sales Agreement", stage: "Close Old Deal",   delivery: "2025-03-24", role: "Software Engineer", owner: "No Owner",        published: false, jobPosted: true  },
-    { id: "34567890123", name: "Nexus Group - Executive Support",    stage: "Client Interview",   delivery: "2025-03-20", role: "Executive Assistant", owner: "Juan Pérez",    published: true,  jobPosted: true  },
-    { id: "45678901234", name: "Harbor Legal - Paralegal",           stage: "Details and Payment", delivery: "2025-03-17", role: "Customer Service", owner: "Laura González",  published: true,  jobPosted: false },
-    { id: "56789012345", name: "Vertex Media - Content Team",        stage: "Contracts Signed",   delivery: "2025-03-12", role: "Graphic Designer",  owner: "Martin Vega",     published: false, jobPosted: false },
-    { id: "67890123456", name: "Cobalt Health - Front Desk",         stage: "Hiring Survey",      delivery: "2025-03-08", role: "Customer Service",  owner: "No Owner",        published: true,  jobPosted: true  },
-    { id: "78901234567", name: "Lumen Studios - Motion Designer",    stage: "Quick Call",         delivery: "2025-03-03", role: "Graphic Designer",  owner: "Paula Castillo",  published: false, jobPosted: false },
-    { id: "89012345678", name: "Atlas Freight - Dispatch Support",   stage: "Job Posted",         delivery: "2025-02-27", role: "Customer Service",  owner: "Juan Pérez",      published: true,  jobPosted: true  },
-    { id: "90123456789", name: "Orion Capital - Data Analyst",       stage: "Client Interview",   delivery: "2025-02-21", role: "Data Scientist",    owner: "No Owner",        published: true,  jobPosted: false },
+    { id: "35395634262", name: "Administrative Assistant",            stage: "Lost",                delivery: "2026-08-26", role: "Software Engineer",  owner: "Laura González", published: false, jobPosted: true,  rtPod: "ECO", agent: "Alexia López",      specialist: "Alexander Rodriguez" },
+    { id: "67238475692", name: "O'connor Law-Legaal Assistant",        stage: "Contracts Sent",      delivery: "2026-05-15", role: "Graphic Designer",   owner: "No Owner",       published: true,  jobPosted: true,  rtPod: "BAY", agent: "Carlos Rodríguez",  specialist: "Ana González" },
+    { id: "94571238465", name: "Black & Associates - Sales",           stage: "Contracts Sent",      delivery: "2025-11-20", role: "Data Scientist",     owner: "No Owner",       published: true,  jobPosted: false, rtPod: "ARC", agent: "María López",       specialist: "Alexander Rodriguez" },
+    { id: "58392367481", name: "Gian - Grasso",                        stage: "Quick Call",          delivery: "2026-03-10", role: "Product Manager",    owner: "Martin Vega",    published: false, jobPosted: false, rtPod: "ECO", agent: "Alexia López",      specialist: "Ana González" },
+    { id: "76294581342", name: "Black & Associates - Sales",           stage: "Quick Call",          delivery: "2025-07-25", role: "Customer Service",   owner: "Paula Castillo", published: true,  jobPosted: true,  rtPod: "BAY", agent: "Carlos Rodríguez",  specialist: "Luis Carlos Vanegas" },
+    { id: "98127365408", name: "Abacus Analytics",                     stage: "Hiring Survey",       delivery: "2026-01-30", role: "HR Manager",         owner: "No Owner",       published: false, jobPosted: false, rtPod: "ARC", agent: "María López",       specialist: "Ana González" },
+    { id: "94571238466", name: "Black & Associates - Sales",           stage: "Job Posted",          delivery: "2025-09-05", role: "Data Scientist",     owner: "No Owner",       published: true,  jobPosted: true,  rtPod: "ECO", agent: "Alexia López",      specialist: "Alexander Rodriguez" },
+    { id: "98127365409", name: "Abacus Analytics",                     stage: "Lost",                delivery: "2026-04-12", role: "HR Manager",         owner: "No Owner",       published: true,  jobPosted: true,  rtPod: "BAY", agent: "Carlos Rodríguez",  specialist: "Ana González" },
+    { id: "12345678901", name: "Skyline Innovations - Sales Deal",     stage: "Lost",                delivery: "2025-12-01", role: "Graphic Designer",   owner: "No Owner",       published: false, jobPosted: false, rtPod: "ARC", agent: "María López",       specialist: "Luis Carlos Vanegas" },
+    { id: "23456789012", name: "Pinnacle Solutions - Sales Agreement", stage: "Close Old Deal",      delivery: "2026-08-18", role: "Software Engineer",  owner: "No Owner",       published: false, jobPosted: true,  rtPod: "ECO", agent: "Alexia López",      specialist: "Alexander Rodriguez" },
+    { id: "34567890123", name: "Nexus Group - Executive Support",      stage: "Client Interview",    delivery: "2026-02-19", role: "Executive Assistant", owner: "Juan Pérez",    published: true,  jobPosted: true,  rtPod: "BAY", agent: "Carlos Rodríguez",  specialist: "Ana González" },
+    { id: "45678901234", name: "Harbor Legal - Paralegal",             stage: "Details and Payment", delivery: "2025-10-14", role: "Customer Service",   owner: "Laura González", published: true,  jobPosted: false, rtPod: "ARC", agent: "María López",       specialist: "Alexander Rodriguez" },
+    { id: "56789012345", name: "Vertex Media - Content Team",          stage: "Contracts Signed",    delivery: "2026-06-03", role: "Graphic Designer",   owner: "Martin Vega",    published: false, jobPosted: false, rtPod: "ECO", agent: "Alexia López",      specialist: "Luis Carlos Vanegas" },
+    { id: "67890123456", name: "Cobalt Health - Front Desk",           stage: "Hiring Survey",       delivery: "2025-08-22", role: "Customer Service",   owner: "No Owner",       published: true,  jobPosted: true,  rtPod: "BAY", agent: "Carlos Rodríguez",  specialist: "Ana González" },
+    { id: "78901234567", name: "Lumen Studios - Motion Designer",      stage: "Quick Call",          delivery: "2026-07-09", role: "Graphic Designer",   owner: "Paula Castillo", published: false, jobPosted: false, rtPod: "ARC", agent: "María López",       specialist: "Alexander Rodriguez" },
+    { id: "89012345678", name: "Atlas Freight - Dispatch Support",     stage: "Job Posted",          delivery: "2025-06-30", role: "Customer Service",   owner: "Juan Pérez",     published: true,  jobPosted: true,  rtPod: "ECO", agent: "Alexia López",      specialist: "Ana González" },
+    { id: "90123456789", name: "Orion Capital - Data Analyst",         stage: "Client Interview",    delivery: "2026-09-01", role: "Data Scientist",     owner: "No Owner",       published: true,  jobPosted: false, rtPod: "BAY", agent: "Carlos Rodríguez",  specialist: "Luis Carlos Vanegas" },
   ];
 
   /* --- Detalle del deal principal ---------------------------------------- */
@@ -273,6 +277,25 @@ window.VLTData = (function () {
     { id: "IF-1036", deal: "Nexus Group - Executive Support", client: "Ana Beltrán",     submitted: "2025-04-04", status: "Completed" },
   ];
 
+  /* --- Catálogos del wizard de Intake Form -------------------------------- */
+  const intakeOptions = {
+    consultants: ["Pauline Lenoir", "Juan Pérez", "Ana González", "Carlos Rodríguez"],
+    callOutcomes: ["Qualified", "Not qualified", "Follow-up scheduled", "No show", "Rescheduled"],
+    companies: ["Tech Innovators Inc.", "Abacus Analytics", "Black & Associates",
+                "O'connor Law", "Skyline Innovations", "Pinnacle Solutions"],
+    companySizes: ["1-10", "11-50", "51-200", "201-500", "500+"],
+    industries: ["SaaS & Technology", "Law Firm", "Healthcare", "Real Estate",
+                 "Construction", "Consulting & Coaching", "Design & Creative Services"],
+    timeZones: ["PST (UTC-8)", "MST (UTC-7)", "CST (UTC-6)", "EST (UTC-5)"],
+    positions: ["Owner / Founder", "C-Level", "Director", "Manager", "Individual Contributor"],
+    stakeholderRoles: ["Manager", "Consultant", "Agent", "Specialist", "SAM"],
+    howFound: ["Google Search", "Referral", "Social Media", "Webinar", "Podcast", "Other"],
+    leadReadiness: ["Phase A — Ready to hire", "Phase A — Needs nurturing", "Phase A — Not ready"],
+    languages: ["English", "Spanish", "Portuguese", "French"],
+    weeklyHours: ["10 hrs", "20 hrs", "25 hrs", "30 hrs", "40 hrs"],
+    rates: ["$6 USD", "$8 USD", "$10 USD", "$12 USD", "$14 USD", "$17 USD", "$20 USD"],
+  };
+
   /* --- Catálogos para selects -------------------------------------------- */
   const options = {
     vaLevel: ["Starter (0-2 years)", "Professional (3-5 years)", "Advanced (5+ years)"],
@@ -289,8 +312,9 @@ window.VLTData = (function () {
   };
 
   return {
-    currentUser, dealStages, primaryRoles, dealOwners, deals, dealDetail,
+    currentUser, dealStages, primaryRoles, dealOwners, rtPods, agents, specialists,
+    deals, dealDetail,
     applications, candidate, assessments, otherJobs, notes, agreements,
-    proposalVAs, intakeForms, options,
+    proposalVAs, intakeForms, options, intakeOptions,
   };
 })();

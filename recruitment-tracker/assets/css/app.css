@@ -636,6 +636,7 @@ a:hover { text-decoration: underline; }
   box-shadow: var(--shadow-overlay);
 }
 .modal--sm .modal__inner { width: min(460px, calc(100vw - 48px)); }
+.modal--md .modal__inner { width: min(620px, calc(100vw - 48px)); }
 .modal__header {
   display: flex;
   align-items: flex-start;
@@ -702,7 +703,9 @@ a:hover { text-decoration: underline; }
   justify-content: center;
   gap: var(--space-lg);
   padding: var(--space-2xl) 0;
+  flex-wrap: wrap;
 }
+.step { flex: 0 0 auto; }
 .step { display: grid; justify-items: center; gap: var(--space-sm); }
 .step__bullet {
   display: grid; place-items: center;
@@ -714,10 +717,22 @@ a:hover { text-decoration: underline; }
   font-weight: var(--font-weight-semibold);
 }
 .step__label { font-size: var(--font-size-xs); }
-.step[data-state="done"] .step__bullet { border-style: solid; background: var(--color-primary); color: var(--color-white); }
+.step[data-state="done"] .step__bullet {
+  border-style: solid;
+  border-color: var(--color-primary);
+  background: var(--color-primary);
+  color: var(--color-white);
+}
 .step[data-state="todo"] .step__bullet { border: 0; background: var(--surface-header); color: var(--color-text-body); }
 .step[data-state="todo"] .step__label { color: var(--color-text-body); }
-.step-line { width: 88px; height: 1px; margin-top: 18px; background: var(--border-default); }
+.step-line {
+  flex: 1 1 auto;
+  min-width: 16px;
+  max-width: 88px;
+  height: 1px;
+  margin-top: 18px;
+  background: var(--border-default);
+}
 
 /* --------------------------------------------------------------------------
    17. Selección tipo radio-card (Select VA)
@@ -861,4 +876,44 @@ a:hover { text-decoration: underline; }
   .link-row { grid-template-columns: minmax(0, 1fr); }
   .kpi { width: 100%; }
   .toast-region { right: var(--space-lg); left: var(--space-lg); width: auto; }
+}
+
+
+/* --------------------------------------------------------------------------
+   21. Wizard de Intake Form
+   -------------------------------------------------------------------------- */
+.wizard { max-width: 1020px; margin: 0 auto; }
+
+.wizard__intro { margin-bottom: var(--space-xl); }
+.wizard__title { font-size: var(--font-size-h1); font-weight: var(--font-weight-semibold); }
+.wizard__subtitle { color: var(--color-text-body); }
+
+.wizard__fields {
+  display: grid;
+  gap: var(--space-xl);
+  max-width: 640px;
+  margin: 0 auto;
+  padding-top: var(--space-xl);
+  border-top: 1px solid var(--border-default);
+}
+
+.wizard__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-md);
+  max-width: 640px;
+  margin: var(--space-3xl) auto 0;
+}
+
+/* fila de fecha + hora del paso "Call Details" */
+.datetime-row { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-sm); }
+.datetime-row .input { width: auto; min-width: 0; }
+.datetime-row .input--date { flex: 0 0 170px; }
+.datetime-row .input--num  { flex: 0 0 64px; text-align: center; }
+.datetime-row .select      { flex: 0 0 84px; }
+.datetime-row__label { font-size: var(--font-size-xs); color: var(--color-text-heading); }
+
+@media (max-width: 720px) {
+  .wizard__actions { justify-content: stretch; }
+  .wizard__actions .btn { flex: 1; }
 }

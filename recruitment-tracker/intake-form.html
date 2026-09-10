@@ -1,0 +1,264 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Intake Form · Recruitment Tracker</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/tokens.css?v=1">
+  <link rel="stylesheet" href="assets/css/app.css?v=1">
+</head>
+<body>
+  <main class="page stack" id="page"></main>
+
+  <dialog class="modal modal--sm" id="done-dialog">
+    <div class="modal__inner">
+      <div class="modal__header"><h2 class="modal__title">Intake form submitted</h2></div>
+      <p class="muted">The intake form was finalized and is now available in the Intake Forms list.</p>
+      <div class="modal__footer">
+        <button class="btn btn--neutral" type="button" data-close>Stay here</button>
+        <a class="btn btn--primary" href="intake-forms.html">Go to Intake Forms</a>
+      </div>
+    </div>
+  </dialog>
+
+  <script src="assets/js/data.js?v=1"></script>
+  <script src="assets/js/app.js?v=1"></script>
+  <script>
+  (function () {
+    const D = window.VLTData;
+    const O = D.intakeOptions;
+    const { esc, icon, pageHeader, modal, toast, param } = VLT;
+
+    /* ----------------------------------------------------------------------
+       Definición declarativa de los 5 pasos del wizard.
+       Cada campo: {name, label, type, required?, options?, placeholder?, hint?}
+       ---------------------------------------------------------------------- */
+    const STEPS = [
+      {
+        key: "call",
+        nav: "Call Details",
+        title: "Call Details",
+        subtitle: "Please provide information about the consultation call",
+        fields: [
+          { name: "consultant",  label: "Consultant Name",     type: "select", required: true, options: O.consultants },
+          { name: "pod",         label: "Recruitment Team Pod", type: "select", required: true, options: D.rtPods },
+          { name: "callDate",    label: "Date of Call",        type: "date",   required: true },
+          { name: "callDateTime", label: "Date & Time of Call", type: "datetime", required: true },
+          { name: "callType",    label: "Type of Call",        type: "text",   placeholder: "Discovery, follow-up, etc." },
+          { name: "callOutcome", label: "Call Outcome",        type: "select", required: true, options: O.callOutcomes },
+          { name: "callNotes",   label: "Additional Notes",    type: "textarea",
+            hint: "Use this space only for brief logistical context not captured elsewhere (ex: client arrived late, rescheduled follow-up, unusual circumstances, etc.)" },
+        ],
+      },
+      {
+        key: "client",
+        nav: "Client Information",
+        title: "Client Information & Business Information",
+        subtitle: "Please provide information about the consultation call",
+        fields: [
+          { name: "companyName",  label: "Company Name",       type: "select", required: true, options: O.companies },
+          { name: "companySize",  label: "Company Size",       type: "select", required: true, options: O.companySizes },
+          { name: "industry",     label: "Business Industry",  type: "select", required: true, options: O.industries },
+          { name: "clientName",   label: "Client Full Name",   type: "text",   required: true, placeholder: "Jessica Wilson" },
+          { name: "clientEmail",  label: "Client Email",       type: "email",  required: true, placeholder: "you@example.com" },
+          { name: "timeZone",     label: "Time Zone",          type: "select", required: true, options: O.timeZones },
+          { name: "position",     label: "What is their Position in the Company?", type: "select", required: true, options: O.positions },
+          { name: "decisionMaker", label: "Is the Lead the Decision Maker?", type: "select", options: ["Yes", "No", "Not sure"] },
+          { name: "stakeholder",  label: "VL Stakeholder Role", type: "select", options: O.stakeholderRoles, placeholder: "Select options" },
+          { name: "howFound",     label: "How did they find us?", type: "select", required: true, options: O.howFound },
+          { name: "promoCode",    label: "Promo Code",         type: "text" },
+          { name: "referralCode", label: "Referral Code",      type: "text" },
+        ],
+      },
+      {
+        key: "lead",
+        nav: "Lead Readiness",
+        title: "Lead Readiness",
+        subtitle: "Please provide information about the consultation call",
+        fields: [
+          { name: "leadPhaseA",       label: "Lead Readiness - Phase A", type: "select", required: true, options: O.leadReadiness },
+          { name: "consultantNotes",  label: "Additional Consultant Notes", type: "textarea", required: true },
+        ],
+      },
+      {
+        key: "company",
+        nav: "Company Overview",
+        title: "Company Overview",
+        subtitle: "Please provide information about the consultation call",
+        fields: [
+          { name: "companyOverview", label: "Company Overview", type: "textarea", required: true },
+          { name: "workedWithVA",    label: "Has the Client Worked with a VA Before?", type: "select", required: true, options: ["Yes", "No"] },
+        ],
+      },
+      {
+        key: "role",
+        nav: "Role Details",
+        title: "Role Details",
+        subtitle: "Please provide information about the consultation call",
+        submitLabel: "Finalize Submission",
+        fields: [
+          { name: "hiringRole",   label: "What Role is the Client Hiring For?", type: "select", required: true, options: D.primaryRoles },
+          { name: "roleOverview", label: "Role Overview",       type: "textarea", required: true },
+          { name: "tasks",        label: "Tasks & Responsabilities", type: "text", required: true, placeholder: "Main tasks for this role" },
+          { name: "otherTasks",   label: "Other Tasks & Responsabilities", type: "textarea", required: true },
+          { name: "softSkills",   label: "Soft Skills & Personality Fit", type: "textarea", required: true },
+          { name: "languages",    label: "Languages",           type: "select", required: true, options: O.languages, placeholder: "Select options" },
+          { name: "systems",      label: "Systems & Tools Used", type: "textarea", required: true },
+          { name: "training",     label: "Training Process",    type: "textarea", required: true },
+          { name: "exception",    label: "Exception?",          type: "checkbox" },
+          { name: "partFull",     label: "Part - time or Full - time?", type: "select", required: true, options: ["Part-time", "Full-time"] },
+          { name: "weeklyHours",  label: "Weekly Hours",        type: "select", required: true, options: O.weeklyHours },
+          { name: "levelApproved", label: "Level Approved",     type: "select", required: true, options: D.options.vaLevel },
+          { name: "clientMinRate", label: "Client Min Rate",    type: "select", required: true, options: O.rates },
+          { name: "clientMaxRate", label: "Client Max Rate",    type: "select", required: true, options: O.rates },
+          { name: "schedule",     label: "Schedule / Availability Needs", type: "textarea", required: true },
+          { name: "vasNeeded",    label: "Number of VAs Needed", type: "select", required: true, options: ["1", "2", "3", "4", "5+"] },
+        ],
+      },
+    ];
+
+    let current = Math.max(0, STEPS.findIndex((s) => s.key === param("step", "call")));
+    const answers = {};
+
+    /* --- Render de un campo ------------------------------------------------ */
+    function control(f) {
+      const req = f.required ? " required" : "";
+      const ph = f.placeholder || (f.type === "select" ? "Select an option" : "Write your message here...");
+      const saved = answers[f.name];
+
+      switch (f.type) {
+        case "select":
+          return `<select class="select" name="${f.name}"${req}>
+                    <option value="">${esc(ph)}</option>
+                    ${(f.options || []).map((o) =>
+                      `<option${saved === o ? " selected" : ""}>${esc(o)}</option>`).join("")}
+                  </select>`;
+        case "textarea":
+          return `<textarea class="textarea" name="${f.name}" placeholder="${esc(ph)}"${req}>${esc(saved || "")}</textarea>`;
+        case "date":
+          return `<input class="input" type="date" name="${f.name}" value="${esc(saved || "")}"${req}>`;
+        case "datetime":
+          return `<div class="datetime-row">
+                    <input class="input input--date" type="date" name="${f.name}"${req}>
+                    <span class="datetime-row__label">Time (PST):</span>
+                    <input class="input input--num" type="number" min="1" max="12" name="${f.name}-h" placeholder="12">
+                    <input class="input input--num" type="number" min="0" max="59" name="${f.name}-m" placeholder="Min">
+                    <select class="select" name="${f.name}-ampm"><option>AM</option><option selected>PM</option></select>
+                  </div>`;
+        case "checkbox":
+          return `<label class="checkbox">
+                    <input type="checkbox" name="${f.name}"${saved ? " checked" : ""}> ${esc(f.label)}
+                  </label>`;
+        default:
+          return `<input class="input" type="${f.type}" name="${f.name}"
+                         placeholder="${esc(f.placeholder || "")}" value="${esc(saved || "")}"${req}>`;
+      }
+    }
+
+    function fieldMarkup(f) {
+      // El checkbox lleva su etiqueta dentro del propio control.
+      if (f.type === "checkbox") return `<div class="field">${control(f)}</div>`;
+      return `
+        <div class="field">
+          <span class="field__label">${esc(f.label)}${f.required ? '<span class="req"> *</span>' : ""}</span>
+          ${f.hint ? `<span class="field__hint">${esc(f.hint)}</span>` : ""}
+          ${control(f)}
+        </div>`;
+    }
+
+    function stepper() {
+      return `<div class="stepper">${STEPS.map((s, i) => {
+        const state = i < current ? "done" : i === current ? "active" : "todo";
+        return `
+          ${i ? '<div class="step-line"></div>' : ""}
+          <div class="step" data-state="${state}">
+            <span class="step__bullet">${state === "done" ? icon("check", 16) : i + 1}</span>
+            <span class="step__label">${esc(s.nav)}</span>
+          </div>`;
+      }).join("")}</div>`;
+    }
+
+    function render() {
+      const step = STEPS[current];
+      document.getElementById("page").innerHTML = `
+        ${pageHeader({
+          title: "Administrative Assistant",
+          breadcrumb: [{ label: "Intake Forms", href: "intake-forms.html" },
+                       { label: "Intake Form Name" }],
+        })}
+
+        <section class="card card--pad">
+          <div class="wizard">
+            ${stepper()}
+            <div class="wizard__intro" style="max-width:640px;margin:0 auto">
+              <h2 class="wizard__title">${esc(step.title)}</h2>
+              <p class="wizard__subtitle">${esc(step.subtitle)}</p>
+            </div>
+            <form id="step-form" novalidate>
+              <div class="wizard__fields">
+                ${step.fields.map(fieldMarkup).join("")}
+              </div>
+              <div class="wizard__actions">
+                ${current > 0 ? '<button class="btn btn--outline" type="button" id="back">Back</button>' : ""}
+                <button class="btn btn--primary" type="button" id="next">
+                  ${esc(step.submitLabel || "Save & Continue")}
+                </button>
+              </div>
+            </form>
+          </div>
+        </section>`;
+
+      wire();
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    function collect() {
+      const form = document.getElementById("step-form");
+      STEPS[current].fields.forEach((f) => {
+        const c = form.elements[f.name];
+        if (!c) return;
+        answers[f.name] = f.type === "checkbox" ? c.checked : c.value;
+      });
+    }
+
+    function validate() {
+      const form = document.getElementById("step-form");
+      const missing = STEPS[current].fields.filter((f) => {
+        if (!f.required) return false;
+        const c = form.elements[f.name];
+        return c && !String(c.value).trim();
+      });
+      if (missing.length) {
+        toast(`Faltan ${missing.length} campo(s) obligatorio(s)`, "error");
+        form.elements[missing[0].name].focus();
+        return false;
+      }
+      return true;
+    }
+
+    function wire() {
+      const back = document.getElementById("back");
+      if (back) back.addEventListener("click", () => { collect(); current--; render(); });
+
+      document.getElementById("next").addEventListener("click", () => {
+        if (!validate()) return;
+        collect();
+        if (current < STEPS.length - 1) {
+          current++;
+          render();
+          toast(`Paso guardado: ${STEPS[current - 1].nav}`, "success");
+        } else {
+          modal("done-dialog").open();
+        }
+      });
+    }
+
+    render();
+    VLT.init("intake");
+  })();
+  </script>
+</body>
+</html>

@@ -272,6 +272,8 @@ window.VLT = (function () {
    * @param {number}     [cfg.pageSize=10]
    * @param {Function}   [cfg.searchFn]    (row, term) => boolean
    * @param {boolean}    [cfg.selectable]  añade checkboxes
+   * @param {string}     [cfg.paginationStyle="compact"] "compact" (‹ 1 2 3 ›) o
+   *                                                     "full" (« ‹ 1 2 3 › »)
    * @param {Function}   [cfg.onSelection] (selectedRows) => void
    * @param {string}     [cfg.emptyText]
    */
@@ -333,6 +335,7 @@ window.VLT = (function () {
              <div class="table-empty">${esc(cfg.emptyText || "No hay resultados para esta búsqueda.")}</div>
            </td></tr>`;
 
+      const full = cfg.paginationStyle === "full";
       const pageButtons = [];
       const push = (n) => pageButtons.push(
         `<button type="button" data-page="${n}" ${n === state.page ? 'aria-current="true"' : ""}>${n}</button>`);
@@ -353,11 +356,11 @@ window.VLT = (function () {
         <div class="table-footer">
           <span>Showing ${rows.length ? start + 1 : 0}–${Math.min(start + state.pageSize, rows.length)} of ${rows.length}</span>
           <div class="pagination">
-            <button type="button" data-nav="first" ${state.page === 1 ? "disabled" : ""} aria-label="Primera página">${icon("chevronsLeft", 14)}</button>
+            ${full ? `<button type="button" data-nav="first" ${state.page === 1 ? "disabled" : ""} aria-label="Primera página">${icon("chevronsLeft", 14)}</button>` : ""}
             <button type="button" data-nav="prev"  ${state.page === 1 ? "disabled" : ""} aria-label="Anterior">${icon("chevronLeft", 14)}</button>
             ${pageButtons.join("")}
             <button type="button" data-nav="next"  ${state.page === pages ? "disabled" : ""} aria-label="Siguiente">${icon("chevronRight", 14)}</button>
-            <button type="button" data-nav="last"  ${state.page === pages ? "disabled" : ""} aria-label="Última página">${icon("chevronsRight", 14)}</button>
+            ${full ? `<button type="button" data-nav="last"  ${state.page === pages ? "disabled" : ""} aria-label="Última página">${icon("chevronsRight", 14)}</button>` : ""}
           </div>
         </div>`;
 

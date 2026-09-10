@@ -46,13 +46,13 @@
       columns: [
         { key: "id", label: "Form ID", sortable: true },
         { key: "deal", label: "Deal", sortable: true,
-          render: (r) => `<a class="cell-link" href="deal.html?tab=intake">${esc(r.deal)}</a>` },
+          render: (r) => `<a class="cell-link" href="intake-form.html?id=${esc(r.id)}">${esc(r.deal)}</a>` },
         { key: "client", label: "Client", sortable: true },
         { key: "submitted", label: "Submitted", sortable: true, render: (r) => formatDate(r.submitted) },
         { key: "status", label: "Status", sortable: true,
           render: (r) => badge(r.status, tone[r.status] || "neutral") },
         { key: "action", label: "Action", align: "right",
-          render: () => `<a class="icon-button" href="deal.html?tab=intake" aria-label="Ver formulario">${icon("eye", 16)}</a>` },
+          render: (r) => `<a class="icon-button" href="intake-form.html?id=${esc(r.id)}" aria-label="Ver formulario">${icon("eye", 16)}</a>` },
       ],
       pageSize: 10,
       searchFn: (r, t) => (r.id + " " + r.deal + " " + r.client).toLowerCase().includes(t),
@@ -62,7 +62,7 @@
       .addEventListener("input", (e) => table.search(e.target.value));
 
     document.getElementById("new-form")
-      .addEventListener("click", () => VLT.toast("Alta de intake form — pendiente de diseño en Figma"));
+      .addEventListener("click", () => { location.href = "intake-form.html"; });
 
     VLT.init("intake");
   })();

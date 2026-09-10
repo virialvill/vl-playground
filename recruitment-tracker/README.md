@@ -29,8 +29,9 @@ Luego entra a <http://localhost:8777>.
 |---|---|---|
 | `index.html` | Log in con Google | `1.0 Log in` |
 | `dashboard.html` | Dashboard: KPIs + My Deals | `1.0 Dashboard Manager-Consultant-Agent-Specialist` |
-| `deals.html` | Listado completo de Deals + filtros | `Deals` / `1.1 View Filter` |
+| `deals.html` | Listado completo de Deals + filtros | `Deals` (`330:22346`) / `1.1 View Filter` |
 | `intake-forms.html` | Listado de Intake Forms | *(inferida — ver notas)* |
+| `intake-form.html` | Wizard de Intake Form (5 pasos) | `New Intake` — `Call Details` … `Role Details` |
 | `deal.html` | Detalle del deal, con 5 tabs | `Deal > Deal Details`, `Job Details`, `Job Application Table`, `Bulk Feature` |
 | `job-post.html` | Crear / editar Job Post | `Create Job Post (Assessment Based)`, `Edit Job Post` |
 | `candidate.html` | Perfil del VA, con 5 tabs | `Job Application`, `Assessment Data`, `Profile Details`, `Other Jobs`, `Notes` |
@@ -61,6 +62,11 @@ Se puede entrar directo a una tab con `?tab=`:
 - **Agreement creation**: stepper de 2 pasos, selección de VA, validación, diálogo de confirmación,
   botón en estado *loading* y pantalla de éxito.
   El estado de error (`2.3.1 Error Message`) se puede revisar con `agreement.html?fail=1`.
+- **Intake Form**: wizard de 5 pasos (Call Details → Client Information → Lead Readiness →
+  Company Overview → Role Details) con stepper, validación por paso, navegación Back/Continue,
+  persistencia de respuestas entre pasos y diálogo final al enviar.
+  Se puede entrar directo a un paso con `intake-form.html?step=lead`
+  (valores: `call`, `client`, `lead`, `company`, `role`).
 - **Notas**: agregar, buscar y eliminar.
 - **Sidebar**: oculto por defecto y desplegable desde el menú del topbar, igual que en el diseño.
 - **Toasts** para confirmar acciones.
@@ -78,6 +84,7 @@ recruitment-tracker/
 ├── dashboard.html        Dashboard
 ├── deals.html            Listado de deals
 ├── intake-forms.html     Listado de intake forms
+├── intake-form.html      Wizard de intake form (5 pasos)
 ├── deal.html             Detalle del deal (5 tabs)
 ├── job-post.html         Formulario de job post
 ├── candidate.html        Perfil del VA (5 tabs)
@@ -136,9 +143,17 @@ Cosas que resolví con criterio propio porque el archivo de Figma no las define:
    `Deal Details · Job Details · Job Applications Table · Agreement Creation`.
    Unifiqué en cinco tabs; falta confirmar si *Proposal VAs* y *Job Applications Table*
    son la misma pantalla o dos distintas.
-3. **Intake Forms** — el sidebar la incluye pero no encontré su pantalla en el archivo.
-   Armé un listado con los mismos componentes de Deals.
-4. **Responsive** — el archivo está a 1920 px. Agregué breakpoints en 1100 y 720 px
+3. **Intake Forms** — el *wizard* sí está en el archivo (sección `New Intake`), y de ahí salió
+   `intake-form.html`. Lo que sigue sin pantalla propia es el **listado** de intake forms;
+   ese lo armé con los mismos componentes de Deals.
+4. **Inconsistencias de copy en el diseño** que resolví por mi cuenta:
+   - En `Call Details` hay dos campos seguidos etiquetados `Date of Call`; al segundo,
+     que además lleva hora, lo nombré `Date & Time of Call`.
+   - Varios inputs de texto tienen `you@example.com` como placeholder aunque no son correos
+     (`Type of Call`, `Client Full Name`, `Tasks & Responsabilities`); les puse placeholders acordes.
+   - En la tabla de Deals conviven `Job Not Posted` y `Not Job Posted` para el mismo estado;
+     unifiqué en `Job Not Posted`.
+5. **Responsive** — el archivo está a 1920 px. Agregué breakpoints en 1100 y 720 px
    con criterio propio; no hay diseño móvil que replicar.
-5. **Pantallas que no repliqué** — las variantes de `1.1 View Filter` de la sección Deals
+6. **Pantallas que no repliqué** — las variantes de `1.1 View Filter` de la sección Deals
    (son estados del mismo modal de filtros, ya cubierto) y `2.1.1 No VA's List`.

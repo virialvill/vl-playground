@@ -290,6 +290,7 @@
       rows: D.applications,
       selectable: true,
       pageSize: 8,
+      paginationStyle: "full",
       searchFn: (r, t) => (r.name + " " + r.email).toLowerCase().includes(t),
       columns: [
         { key: "name", label: "VA Name", sortable: true, render: (r) => `
