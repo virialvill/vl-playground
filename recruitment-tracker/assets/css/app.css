@@ -962,3 +962,87 @@ a:hover { text-decoration: underline; }
   opacity: 1;
   transform: translateX(-50%) translateY(0);
 }
+
+/* --------------------------------------------------------------------------
+   23. Select personalizado
+   El <select> nativo se oculta y se sustituye por un botón + listbox propios,
+   porque el desplegable del navegador no admite estilos.
+   -------------------------------------------------------------------------- */
+.select-wrap { position: relative; display: block; }
+
+/* Con display:none el control sigue en form.elements y conserva su value,
+   pero deja de ser enfocable y el clic en el <label> ya no abre el popup. */
+.select--native { display: none; }
+
+.select-button {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-sm);
+  width: 100%;
+  min-height: 38px;
+  padding: 8px var(--space-md);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-sm);
+  background: var(--surface-default);
+  color: var(--color-text-heading);
+  font-size: var(--font-size-sm);
+  text-align: left;
+  cursor: pointer;
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+.select-button__label { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.select-button[data-placeholder="true"] .select-button__label { color: var(--color-text-body); }
+.select-button svg { flex: 0 0 auto; color: var(--color-text-body); transition: transform var(--transition-fast); }
+.select-button[aria-expanded="true"] svg { transform: rotate(180deg); }
+
+.select-button:hover:not(:disabled) { border-color: var(--color-primary); }
+.select-button:focus-visible {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px var(--color-primary-ghost);
+}
+.select-button:disabled {
+  background: var(--surface-header);
+  color: var(--color-text-body);
+  cursor: not-allowed;
+}
+
+.select-list {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  z-index: 30;
+  max-height: 240px;
+  margin: 0;
+  padding: var(--space-xs) 0;
+  overflow-y: auto;
+  border-radius: var(--radius-sm);
+  background: var(--surface-default);
+  box-shadow: var(--shadow-lg);
+}
+/* El display:block de arriba ganaría al [hidden] del navegador. */
+.select-list[hidden] { display: none; }
+
+.select-option {
+  padding: var(--space-sm) var(--space-md);
+  color: var(--color-text-body);
+  font-size: var(--font-size-sm);
+  cursor: pointer;
+  transition: background var(--transition-fast), color var(--transition-fast);
+}
+.select-option:hover,
+.select-option.is-active {
+  background: var(--surface-page);
+  color: var(--color-text-heading);
+}
+.select-option[aria-selected="true"] {
+  background: var(--color-primary-ghost);
+  color: var(--color-primary);
+  font-weight: var(--font-weight-medium);
+}
+.select-option[aria-disabled="true"] { opacity: .5; cursor: not-allowed; }
+
+/* En la fila de fecha/hora el select va a ancho fijo. */
+.datetime-row .select-wrap { flex: 0 0 84px; }

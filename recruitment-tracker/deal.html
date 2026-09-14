@@ -206,10 +206,11 @@
           <button class="btn btn--ghost btn--sm" type="button" id="bulk-clear">Clear Selection</button>
           <div class="bulk-bar__end">
             <span class="label">Current Job Stage</span>
-            <select class="select" id="bulk-stage" style="width:220px">
+            <span style="display:block;width:220px">
+            <select class="select" id="bulk-stage">
               <option value="">Select stage</option>
               ${D.options.jobStage.map((s) => `<option>${esc(s)}</option>`).join("")}
-            </select>
+            </select></span>
             <button class="btn btn--primary" type="button" id="bulk-apply">Apply to Selected</button>
           </div>
         </div>
@@ -360,6 +361,7 @@
     document.getElementById("af-reset").addEventListener("click", () => {
       ["af-template","af-stage","af-other","af-country","af-degree","af-exp","af-rate","af-client-rate","af-date"]
         .forEach((id) => { document.getElementById(id).value = ""; });
+      VLT.syncSelects();
       toast("Filtros restablecidos");
     });
 

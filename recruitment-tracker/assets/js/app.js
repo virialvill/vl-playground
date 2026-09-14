@@ -249,6 +249,141 @@ window.VLT = (function () {
   }
 
   /* ------------------------------------------------------------------------
+     Select personalizado
+
+     Un <select> nativo dibuja su lista con la UI del sistema operativo y el
+     CSS no puede tocarla. Para que el desplegable siga el diseño se envuelve
+     cada select en un combobox propio: el <select> original se queda en el
+     DOM (oculto) como fuente de la verdad —value, form.elements, eventos
+     change— y encima se dibuja un botón + un listbox estilables.
+
+     La lista se construye al abrir, leyendo las <option> del momento, así que
+     rellenar el select por JS después de mejorarlo funciona sin más.
+     ---------------------------------------------------------------------- */
+  function enhanceSelect(sel) {
+    if (sel.dataset.enhanced) return;
+    sel.dataset.enhanced = "1";
+
+    const wrap = el('<div class="select-wrap"></div>');
+    sel.parentNode.insertBefore(wrap, sel);
+    wrap.append(sel);
+    sel.classList.add("select--native");
+    sel.setAttribute("aria-hidden", "true");
+    sel.tabIndex = -1;
+
+    const button = el(`<button type="button" class="select-button"
+        aria-haspopup="listbox" aria-expanded="false"${sel.disabled ? " disabled" : ""}>
+        <span class="select-button__label"></span>${icon("chevronDown", 16)}
+      </button>`);
+    const list = el('<ul class="select-list" role="listbox" hidden></ul>');
+    wrap.append(button, list);
+
+    /** El botón refleja lo que diga el <select>. */
+    function syncLabel() {
+      const opt = sel.options[sel.selectedIndex];
+      const label = button.firstElementChild;
+      label.textContent = opt ? opt.textContent : "";
+      // Sin valor real, el texto se ve como placeholder.
+      button.dataset.placeholder = String(!sel.value);
+      button.disabled = sel.disabled;
+    }
+
+    function buildList() {
+      list.innerHTML = Array.from(sel.options).map((o, i) => `
+        <li class="select-option" role="option" data-index="${i}"
+            aria-selected="${i === sel.selectedIndex}"
+            ${o.disabled ? 'aria-disabled="true"' : ""}>${esc(o.textContent)}</li>`).join("");
+    }
+
+    let activeIndex = -1;
+
+    function setActive(i) {
+      const items = $$(".select-option", list);
+      if (!items.length) return;
+      activeIndex = Math.min(Math.max(0, i), items.length - 1);
+      items.forEach((li, n) => li.classList.toggle("is-active", n === activeIndex));
+      items[activeIndex].scrollIntoView({ block: "nearest" });
+    }
+
+    const isOpen = () => !list.hidden;
+
+    function open() {
+      if (sel.disabled) return;
+      closeAll(list);
+      buildList();
+      list.hidden = false;
+      button.setAttribute("aria-expanded", "true");
+      setActive(sel.selectedIndex < 0 ? 0 : sel.selectedIndex);
+    }
+
+    function close() {
+      list.hidden = true;
+      button.setAttribute("aria-expanded", "false");
+    }
+
+    function choose(i) {
+      const opt = sel.options[i];
+      if (!opt || opt.disabled) return;
+      sel.selectedIndex = i;
+      syncLabel();
+      close();
+      button.focus();
+      sel.dispatchEvent(new Event("change", { bubbles: true }));
+    }
+
+    button.addEventListener("click", () => (isOpen() ? close() : open()));
+
+    list.addEventListener("click", (e) => {
+      const li = e.target.closest(".select-option");
+      if (li) choose(Number(li.dataset.index));
+    });
+
+    button.addEventListener("keydown", (e) => {
+      switch (e.key) {
+        case "ArrowDown": e.preventDefault(); isOpen() ? setActive(activeIndex + 1) : open(); break;
+        case "ArrowUp":   e.preventDefault(); isOpen() ? setActive(activeIndex - 1) : open(); break;
+        case "Home":      if (isOpen()) { e.preventDefault(); setActive(0); } break;
+        case "End":       if (isOpen()) { e.preventDefault(); setActive(sel.options.length - 1); } break;
+        case "Enter":
+        case " ":         e.preventDefault(); isOpen() ? choose(activeIndex) : open(); break;
+        case "Escape":    if (isOpen()) { e.preventDefault(); close(); } break;
+        case "Tab":       close(); break;
+      }
+    });
+
+    sel.addEventListener("change", syncLabel);
+    wrap._vltSync = syncLabel;
+    syncLabel();
+  }
+
+  /** Cierra todos los desplegables abiertos, menos el que se indique. */
+  function closeAll(except) {
+    $$(".select-list").forEach((l) => {
+      if (l !== except && !l.hidden) {
+        l.hidden = true;
+        l.previousElementSibling.setAttribute("aria-expanded", "false");
+      }
+    });
+  }
+
+  document.addEventListener("click", (e) => {
+    if (!e.target.closest(".select-wrap")) closeAll();
+  });
+
+  /** Convierte en combobox todos los <select class="select"> de `root`. */
+  function enhanceSelects(root = document) {
+    $$("select.select", root).forEach(enhanceSelect);
+  }
+
+  /**
+   * Re-sincroniza las etiquetas tras cambiar `select.value` por código
+   * (por ejemplo al hacer Reset en un modal de filtros).
+   */
+  function syncSelects(root = document) {
+    $$(".select-wrap", root).forEach((w) => w._vltSync && w._vltSync());
+  }
+
+  /* ------------------------------------------------------------------------
      Toasts
      ---------------------------------------------------------------------- */
   function toast(message, tone = "info", ms = 3200) {
@@ -426,10 +561,12 @@ window.VLT = (function () {
     shell(activeKey);
     tabs();
     accordions();
+    enhanceSelects();
   }
 
   return {
     $, $$, esc, el, param, formatDate, icon, badge, avatar, wordmark,
     shell, pageHeader, tabs, accordions, modal, toast, dataTable, init,
+    enhanceSelects, syncSelects,
   };
 })();

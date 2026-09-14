@@ -56,6 +56,11 @@ Se puede entrar directo a una tab con `?tab=`:
 - **Filtros**: tres modales distintos, todos con *Reset* y *Apply Filter* —
   dashboard (4 campos), Deals (8 campos) y Job Applications (9 campos).
 - **Tooltip** “View Deal” sobre el icono de acción de las tablas.
+- **Selects**: el desplegable de un `<select>` nativo lo dibuja el sistema operativo y
+  no admite CSS, así que se sustituye por un combobox propio (botón + listbox) que sí
+  sigue el diseño. El `<select>` original permanece oculto en el DOM como fuente de la
+  verdad —`value`, `form.elements`, evento `change`—, de modo que el resto del código
+  no cambia. Accesible con teclado (flechas, Home/End, Enter, Esc).
 - **Bulk feature**: selección múltiple de VAs, contador, *Clear Selection* y *Apply to Selected*.
 - **Download CSV**: genera y descarga el CSV real de la tabla de aplicaciones.
 - **Job post**: validación de campos obligatorios, diálogo de cancelación, diálogo de publicación.
@@ -109,6 +114,8 @@ recruitment-tracker/
 | `VLT.dataTable(cfg)` | Tabla con búsqueda, orden, paginación y selección |
 | `VLT.modal(id)` | Control de un `<dialog>` |
 | `VLT.toast(msg, tone)` | Notificación temporal |
+| `VLT.enhanceSelects(root)` | Sustituye los `<select>` por un combobox estilable |
+| `VLT.syncSelects(root)` | Re-sincroniza etiquetas tras cambiar `value` por código |
 | `VLT.badge / avatar / icon` | Átomos de UI |
 
 ---
@@ -160,5 +167,8 @@ Cosas que resolví con criterio propio porque el archivo de Figma no las define:
 6. **Dashboard SuperAdmin** — el frame `122:5631` muestra el dashboard con badge ámbar y
    sin tabla “My Deals”. Es otro tipo de usuario, así que queda **fuera de alcance por ahora**;
    se implementará junto con el resto del manejo de roles.
-7. **Pantallas que no repliqué** — las variantes de `1.1 View Filter` de la sección Deals
+7. **Controles nativos pendientes** — los `<input type="date">` siguen mostrando el
+   calendario del navegador. Es el mismo caso que los selects y se resuelve igual
+   (componente propio); todavía no está hecho.
+8. **Pantallas que no repliqué** — las variantes de `1.1 View Filter` de la sección Deals
    (son estados del mismo modal de filtros, ya cubierto) y `2.1.1 No VA's List`.

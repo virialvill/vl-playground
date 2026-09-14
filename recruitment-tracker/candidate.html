@@ -108,16 +108,16 @@
               <input class="input" id="as-search" type="search" placeholder="Enter assessment title">
             </span>
           </div>
-          <label class="field"><span class="field__label">Assessment Role</span>
-            <select class="select" id="as-role" style="width:180px">
+          <label class="field" style="width:180px"><span class="field__label">Assessment Role</span>
+            <select class="select" id="as-role">
               <option value="">Starter</option>${D.primaryRoles.map((r) => `<option>${esc(r)}</option>`).join("")}
             </select></label>
-          <label class="field"><span class="field__label">Assessment Tier</span>
-            <select class="select" id="as-tier" style="width:180px">
+          <label class="field" style="width:180px"><span class="field__label">Assessment Tier</span>
+            <select class="select" id="as-tier">
               <option value="">Starter</option><option>Starter</option><option>Advanced</option><option>Professional</option>
             </select></label>
-          <label class="field"><span class="field__label">Assessment Status</span>
-            <select class="select" id="as-status" style="width:180px">
+          <label class="field" style="width:180px"><span class="field__label">Assessment Status</span>
+            <select class="select" id="as-status">
               <option value="">Starter</option><option>Passed</option><option>Failed</option>
             </select></label>
         </div>

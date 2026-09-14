@@ -148,6 +148,7 @@
 
     document.getElementById("f-reset").addEventListener("click", () => {
       FIELDS.forEach((id) => { document.getElementById(id).value = ""; });
+      VLT.syncSelects();
       table.setRows(D.deals);
       toast("Filtros restablecidos");
     });

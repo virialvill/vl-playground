@@ -248,6 +248,7 @@
       const body = step === 1 ? stepOne() : step === 2 ? stepTwo() : stepThree();
       document.getElementById("page").innerHTML = `${header}${tabsBar}
         <div style="padding-top:24px">${body}</div>`;
+      VLT.enhanceSelects();
       wire();
     }
 
