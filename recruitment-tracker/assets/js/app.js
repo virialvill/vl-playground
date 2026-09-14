@@ -191,7 +191,7 @@ window.VLT = (function () {
           ${avatarText ? avatar(avatarText, "avatar--lg") : ""}
           <div class="stack-s">
             <h1 class="page-header__title">${esc(title)}</h1>
-            ${pill ? `<span>${badge(pill.text, pill.tone || "primary", true)}</span>` : ""}
+            ${pill ? `<span>${badge(pill.text, pill.tone || "primary")}</span>` : ""}
             ${subtitle ? `<p class="page-header__subtitle">${esc(subtitle)}</p>` : ""}
             ${crumbs ? `<nav class="breadcrumb">${crumbs}</nav>` : ""}
           </div>

@@ -917,3 +917,48 @@ a:hover { text-decoration: underline; }
   .wizard__actions { justify-content: stretch; }
   .wizard__actions .btn { flex: 1; }
 }
+
+
+/* --------------------------------------------------------------------------
+   22. Tooltip (icono de acción de las tablas)
+   -------------------------------------------------------------------------- */
+.tooltip { position: relative; display: inline-flex; }
+
+.tooltip::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%) translateY(4px);
+  padding: 6px var(--space-md);
+  border-radius: var(--radius-sm);
+  background: var(--color-dark-surface);
+  color: var(--color-white);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--transition-fast), transform var(--transition-fast);
+}
+
+.tooltip::before {
+  content: "";
+  position: absolute;
+  bottom: calc(100% + 3px);
+  left: 50%;
+  transform: translateX(-50%) translateY(4px);
+  border: 5px solid transparent;
+  border-top-color: var(--color-dark-surface);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--transition-fast), transform var(--transition-fast);
+}
+
+.tooltip:hover::after,
+.tooltip:hover::before,
+.tooltip:focus-visible::after,
+.tooltip:focus-visible::before {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
