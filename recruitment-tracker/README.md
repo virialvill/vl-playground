@@ -28,7 +28,7 @@ Luego entra a <http://localhost:8777>.
 | Archivo | Pantalla | Frame en Figma |
 |---|---|---|
 | `index.html` | Log in con Google | `1.0 Log in` |
-| `dashboard.html` | Dashboard: KPIs + My Deals (2 variantes por rol) | `1.0 Dashboard Manager-Consultant-Agent-Specialist` (`1:11382`, `122:5631`, `122:4973`) |
+| `dashboard.html` | Dashboard: KPIs + My Deals | `1.0 Dashboard Manager-Consultant-Agent-Specialist` (`1:11382`, `122:4973`) |
 | `deals.html` | Listado completo de Deals + filtros | `Deals` (`330:22346`) / `1.1 View Filter` |
 | `intake-forms.html` | Listado de Intake Forms | *(inferida — ver notas)* |
 | `intake-form.html` | Wizard de Intake Form (5 pasos) | `New Intake` — `Call Details` … `Role Details` |
@@ -43,14 +43,6 @@ Luego entra a <http://localhost:8777>.
 Se puede entrar directo a una tab con `?tab=`:
 `deal.html?id=35395634262&tab=apps`
 (valores: `details`, `intake`, `job`, `apps`, `agreement`).
-
-### Variantes del dashboard
-El archivo tiene dos estados del dashboard según el rol de quien entra:
-
-| Estado | URL | Qué muestra |
-|---|---|---|
-| Agent | `dashboard.html` | Badge morado + KPIs + tabla “My Deals” |
-| SuperAdmin | `dashboard.html?role=superadmin` | Badge ámbar + KPIs, **sin** tabla |
 
 ### Tabs de `candidate.html`
 `Job Application` · `Assessment Data` · `Profile Details` · `Other Jobs` · `Notes`
@@ -165,8 +157,8 @@ Cosas que resolví con criterio propio porque el archivo de Figma no las define:
      unifiqué en `Job Not Posted`.
 5. **Responsive** — el archivo está a 1920 px. Agregué breakpoints en 1100 y 720 px
    con criterio propio; no hay diseño móvil que replicar.
-6. **Dashboard SuperAdmin** — en Figma esa variante tiene la tabla “My Deals” como capa
-   oculta. Lo interpreté como que ese rol no tiene deals propios y la omití; si en realidad
-   era un layer apagado por descuido, se restaura quitando `showTable: false`.
+6. **Dashboard SuperAdmin** — el frame `122:5631` muestra el dashboard con badge ámbar y
+   sin tabla “My Deals”. Es otro tipo de usuario, así que queda **fuera de alcance por ahora**;
+   se implementará junto con el resto del manejo de roles.
 7. **Pantallas que no repliqué** — las variantes de `1.1 View Filter` de la sección Deals
    (son estados del mismo modal de filtros, ya cubierto) y `2.1.1 No VA's List`.

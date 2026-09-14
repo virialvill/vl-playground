@@ -54,19 +54,7 @@
   <script>
   (function () {
     const D = window.VLTData;
-    const { esc, icon, badge, pageHeader, dataTable, modal, toast, param } = VLT;
-
-    /* ----------------------------------------------------------------------
-       El dashboard tiene dos variantes en Figma según el rol de quien entra:
-         · agent      → badge morado + tabla "My Deals"
-         · superadmin → badge ámbar y sin tabla (no tiene deals propios)
-       Se cambia con ?role=superadmin
-       ---------------------------------------------------------------------- */
-    const ROLES = {
-      agent:      { label: "Agent",      tone: "primary", showTable: true },
-      superadmin: { label: "SuperAdmin", tone: "warning", showTable: false },
-    };
-    const role = ROLES[param("role", "agent")] || ROLES.agent;
+    const { esc, icon, badge, pageHeader, dataTable, modal, toast } = VLT;
 
     const published   = D.deals.filter((d) => d.published).length;
     const unpublished = D.deals.length - published;
@@ -91,7 +79,7 @@
       ${pageHeader({
         title: `Welcome Back ${D.currentUser.name}!`,
         avatarText: D.currentUser.initials,
-        badge: { text: role.label, tone: role.tone },
+        badge: { text: D.currentUser.role, tone: "primary" },
       })}
 
       <section class="stack-s">
@@ -110,10 +98,7 @@
         </div>
       </section>
 
-      ${role.showTable ? tableCard : ""}`;
-
-    // La variante SuperAdmin no dibuja tabla: no hay nada más que enganchar.
-    if (!role.showTable) { VLT.init("dashboard"); return; }
+      ${tableCard}`;
 
     const columns = [
       { key: "id",   label: "Deal ID", sortable: true },
