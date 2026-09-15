@@ -7,8 +7,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="assets/css/tokens.css?v=1">
-  <link rel="stylesheet" href="assets/css/app.css?v=1">
+  <link rel="stylesheet" href="assets/css/tokens.css?v=2">
+  <link rel="stylesheet" href="assets/css/app.css?v=2">
 </head>
 <body>
   <main class="page stack" id="page"></main>
@@ -50,8 +50,8 @@
     </div>
   </dialog>
 
-  <script src="assets/js/data.js?v=1"></script>
-  <script src="assets/js/app.js?v=1"></script>
+  <script src="assets/js/data.js?v=2"></script>
+  <script src="assets/js/app.js?v=2"></script>
   <script>
   (function () {
     const D = window.VLTData;
@@ -95,7 +95,7 @@
       <div class="card card--pad">
         ${stepper()}
         <div style="text-align:center;max-width:640px;margin:0 auto 24px">
-          <h2 class="h2" style="margin-bottom:8px">Select a VA to create the Agreement for</h2>
+          <h2 class="h4" style="margin-bottom:8px">Select a VA to create the Agreement for</h2>
           <p class="muted">Select the VA to proceed with creating a tailored agreement based on their role,
             the Client’s selected options, and the VA’s details.</p>
         </div>
@@ -121,7 +121,7 @@
         ${stepper()}
 
         <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
-          <h2 class="h2">Agreement Setup for
+          <h2 class="h4">Agreement Setup for
             <span style="color:var(--color-primary)">${esc(selectedVA.name)}</span></h2>
           <div class="table-toolbar__spacer"></div>
           <button class="btn btn--outline" type="button" id="cancel-step2">Cancel</button>
@@ -219,8 +219,8 @@
         <div class="empty-state">
           <div class="empty-state__art">
             <svg width="120" height="120" viewBox="0 0 120 120" fill="none" aria-hidden="true">
-              <circle cx="60" cy="60" r="52" fill="#2ea95c26"/>
-              <circle cx="60" cy="60" r="36" fill="#2ea95c"/>
+              <circle cx="60" cy="60" r="52" fill="#36c96c40"/>
+              <circle cx="60" cy="60" r="36" fill="#36c96c"/>
               <path d="m46 61 10 10 20-22" stroke="#fff" stroke-width="5"
                     stroke-linecap="round" stroke-linejoin="round"/>
             </svg>

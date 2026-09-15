@@ -122,10 +122,65 @@ recruitment-tracker/
 
 ## Design tokens
 
-Extraídos del archivo de Figma con `get_variable_defs` y definidos en `assets/css/tokens.css`.
+Fuente: **RT · Design System Patterns** en Figma
+(`la97sY7XXVFYbXE1DgEW27`, página “🎨 Foundations”), en `assets/css/tokens.css`.
 
-| Token | Valor | Uso |
+### Color · Semantic Status
+
+Cada color tiene tres piezas: el relleno sólido, el tinte de fondo (el mismo color
+con alpha 25%, y 38% en error) y el color de texto que va sobre ese tinte.
+El texto **no** siempre es el color base — en info, success y warning el DS usa un
+tono más oscuro para que se lea.
+
+| Token | Relleno | Tinte | Texto sobre el tinte |
+|---|---|---|---|
+| primary   | `#635bff` | `#635bff40` | `#635bff` |
+| secondary | `#16cdc7` | `#16cdc740` | `#1cc3bd` |
+| info      | `#46caeb` | `#46caeb40` | `#3cacc8` |
+| success   | `#36c96c` | `#2ea95c40` | `#2ea95c` |
+| warning   | `#f8c20a` | `#f8c20a40` | `#d3a509` |
+| error     | `#ff6692` | `#ff669261` | `#ff6692` |
+
+> El tinte de **success** deriva de `#2ea95c` y no de su relleno `#36c96c`.
+> Es así en el DS; se replica igual para no desalinear los badges.
+
+### Color · Neutrals
+
+`white` · `50 #f6f7f9` · `100 #f4f7fb` · `200 #eff4fa` · `300 #e0e6eb` ·
+`500 #98a4ae` · `800 #2a3547` · `900 #1f2a3d` · `navy 900 #0a2540`
+
+Alias en uso: fondo de página = 100, encabezado de tabla = 50, campos
+deshabilitados = 200, bordes = 300, texto secundario = 500, títulos = 900,
+tooltip = navy 900.
+
+### Tipografía · Manrope
+
+Los diez estilos del DS, cada uno con su interlineado. El nombre de la clase
+utilitaria es el nombre del estilo: `.h3` es “Heading/H3”, no “el tercer título”.
+
+| Estilo | Tamaño / interlineado | Peso |
 |---|---|---|
+| H1 | 36 / 40 | SemiBold |
+| H2 | 30 / 36 | SemiBold |
+| H3 | 24 / 32 | SemiBold |
+| H4 | 20 / 28 | SemiBold |
+| H5 | 18 / 28 | SemiBold |
+| H6 | 16 / 24 | SemiBold |
+| Body/Large | 15 / 22 | Regular |
+| Body/Base | 14 / 20 | Regular |
+| Label | 14 / 20 | SemiBold |
+| Caption | 13 / 18 | Regular |
+
+### Pendiente de alinear
+
+Estos siguen viniendo del archivo de pantallas “Audit” y **no** coinciden con el DS:
+
+- **Radios** — el DS define `sm 6 · md 9 · tw 12 · bb 20 · lg 24`; el código usa `4 / 8 / 12 / 16`.
+- **Sombras** — el DS define `sm · md · elevation1-4`; el código tiene tres sombras propias.
+- **Botones** — el DS es una matriz de 6 colores × 4 tipos (Fill · Subtle · Outline · Text)
+  × 3 tamaños; el código tiene cinco variantes sueltas.
+
+---|---|---|
 | `--color-primary` | `#635bff` | Botones, links, estado activo |
 | `--color-dark` / `--color-text-heading` | `#1f2a3d` | Títulos y texto principal |
 | `--color-text-body` | `#98a4ae` | Texto secundario y placeholders |
