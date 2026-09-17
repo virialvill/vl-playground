@@ -143,9 +143,13 @@ window.VLTData = (function () {
       "Natalia Bermúdez Cano",
     ];
     const scores    = [75, 87, 62, 91, 78, 55, 83, 69, 94, 71, 66, 88, 80];
-    const statuses  = ["Completed", "Completed", "In Progress", "Completed", "Completed",
-                       "Not Started", "Completed", "In Progress", "Completed", "Completed",
-                       "Not Started", "Completed", "Completed"];
+    // Assessment Status solo tiene dos valores. La secuencia de las 10 filas
+    // es la del frame "Deal > Job Application Table (Assessment Based)";
+    // las filas 11-13, que el diseño no dibuja, repiten el ciclo.
+    const FIGMA_STATUSES = ["Completed", "Not Completed", "Completed", "Not Completed",
+                            "Completed", "Completed", "Not Completed", "Completed",
+                            "Completed", "Completed"];
+    const statuses = Array.from({ length: 13 }, (_, i) => FIGMA_STATUSES[i % FIGMA_STATUSES.length]);
     const degrees1  = ["Associate/Technical Degree (2 years in University)",
                        "Bachelor's Degree (4 years in University)",
                        "High School (Preparatoria/Bachillerato)"];

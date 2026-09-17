@@ -7,8 +7,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="assets/css/tokens.css?v=6">
-  <link rel="stylesheet" href="assets/css/app.css?v=6">
+  <link rel="stylesheet" href="assets/css/tokens.css?v=7">
+  <link rel="stylesheet" href="assets/css/app.css?v=7">
 </head>
 <body>
   <main class="page stack" id="page"></main>
@@ -79,8 +79,8 @@
     </div>
   </dialog>
 
-  <script src="assets/js/data.js?v=6"></script>
-  <script src="assets/js/app.js?v=6"></script>
+  <script src="assets/js/data.js?v=7"></script>
+  <script src="assets/js/app.js?v=7"></script>
   <script>
   (function () {
     const D = window.VLTData;
@@ -284,7 +284,9 @@
       </div>`;
 
     /* --- Tabla de aplicaciones --------------------------------------------- */
-    const statusTone = { Completed: "success", "In Progress": "warning", "Not Started": "neutral" };
+    // Assessment Status: dos estados. Completed usa success-subtle + green/600
+    // y Not Completed usa error-subtle + error, igual que en el diseño.
+    const statusTone = { "Completed": "success", "Not Completed": "error" };
 
     /* --- Celdas de la tabla de aplicaciones --------------------------------
        31 columnas, las mismas del frame "Deal > Job Application Table
@@ -310,7 +312,7 @@
       rows: D.applications,
       selectable: true,
       wide: true,
-      pageSize: 8,
+      pageSize: 10,
       paginationStyle: "full",
       searchFn: (r, t) => (r.name + " " + r.email).toLowerCase().includes(t),
       // "VA Degree Details" agrupa las dos columnas de estudios.
