@@ -129,7 +129,6 @@ window.VLTData = (function () {
     vaRate: ["$8 USD", "$10 USD", "$12 USD", "$14 USD", "$17 USD"],
     clientRate: ["$12 USD", "$14 USD", "$17 USD", "$20 USD", "$24 USD"],
     emailTemplate: ["Finalized Process", "Interview Invite", "Not Selected", "On Hold"],
-    otherJobStatus: ["VL Reviewing", "Active Proposal", "Associated", "Available"],
   };
 
   const LOREM = "Lorem ipsum dolor sit amet consectetur. Sodales feugiat euismod at habitant et aliquam.";
@@ -178,7 +177,8 @@ window.VLTData = (function () {
       yearsExperience: (i % 8) + 1 + " Years",
       interviewForRole: i % 2 === 0,
       preinterviewNotes: LOREM,
-      otherJobStatus: pick(applicationOptions.otherJobStatus, i),
+      // En el frame las 10 filas dicen "VL Reviewing"; no hay variación.
+      otherJobStatus: "VL Reviewing",
       desiredRate: "$" + (7.5 + i * 0.5).toFixed(1),
       vaRateSent: pick(applicationOptions.vaRate, i),
       clientRateSent: pick(applicationOptions.clientRate, i),

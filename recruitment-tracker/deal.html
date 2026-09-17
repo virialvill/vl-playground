@@ -7,8 +7,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="assets/css/tokens.css?v=7">
-  <link rel="stylesheet" href="assets/css/app.css?v=7">
+  <link rel="stylesheet" href="assets/css/tokens.css?v=8">
+  <link rel="stylesheet" href="assets/css/app.css?v=8">
 </head>
 <body>
   <main class="page stack" id="page"></main>
@@ -79,8 +79,8 @@
     </div>
   </dialog>
 
-  <script src="assets/js/data.js?v=7"></script>
-  <script src="assets/js/app.js?v=7"></script>
+  <script src="assets/js/data.js?v=8"></script>
+  <script src="assets/js/app.js?v=8"></script>
   <script>
   (function () {
     const D = window.VLTData;
@@ -351,7 +351,7 @@
         { key: "preinterviewNotes", label: "Preinterview Notes", width: 344,
           render: (r) => cellNote(r, "preinterviewNotes") },
         { key: "otherJobStatus", label: "Other Job Status", width: 180,
-          render: (r) => badge(r.otherJobStatus, "info") },
+          render: (r) => badge(r.otherJobStatus, "primary") },
         { key: "desiredRate", label: "Desired Rate", width: 150 },
         { key: "vaRateSent", label: "VA Rate Sent", width: 350,
           render: (r) => cellSelect(r, "vaRateSent", O.vaRate) },
