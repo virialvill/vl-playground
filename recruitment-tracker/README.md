@@ -122,18 +122,84 @@ recruitment-tracker/
 
 ## Design tokens
 
-Fuente: **RT · Design System Patterns** en Figma
-(`la97sY7XXVFYbXE1DgEW27`, página “🎨 Foundations”), en `assets/css/tokens.css`.
+Leídos de las variables que **consumen las pantallas**
+(Figma `f9cCYZ5XuIFOE5sqKfLJsQ`, ya vinculadas a la librería publicada),
+y definidos en `assets/css/tokens.css`. Cada bloque refleja una colección real.
 
-### Color · Semantic Status
+### Semantic/Color
 
-Cada color tiene tres piezas: el relleno sólido, el tinte de fondo (el mismo color
-con alpha 25%, y 38% en error) y el color de texto que va sobre ese tinte.
-El texto **no** siempre es el color base — en info, success y warning el DS usa un
-tono más oscuro para que se lea.
+Cada color es un trío: relleno sólido, tinte de fondo y el texto que va encima.
+El texto no siempre es el relleno — success, info y warning usan un tono más oscuro.
 
 | Token | Relleno | Tinte | Texto sobre el tinte |
 |---|---|---|---|
+| primary   | `#635bff` | `#635bff40` | `#635bff` |
+| secondary | `#16cdc7` | `#16cdc740` | `#16cdc7` |
+| info      | `#46caeb` | `#46caeb40` | `#3cacc8` |
+| success   | `#36c96c` | `#2ea95c40` | `#2ea95c` |
+| warning   | `#f8c20a` | `#f8c20a40` | `#d3a509` |
+| error     | `#ff6692` | `#ff669261` | `#ff6692` |
+
+Superficies, bordes y texto:
+
+| Token | Valor | Primitivo |
+|---|---|---|
+| `--surface-default` | `#ffffff` | neutral/white |
+| `--surface-hover` | `#f6f7f9` | neutral/50 |
+| `--surface-page` | `#f4f7fb` | neutral/100 |
+| `--surface-header` | `#f3f3f4` | neutral/150 |
+| `--surface-muted` | `#eff4fa` | neutral/200 |
+| `--border-default` | `#e0e6eb` | neutral/300 |
+| `--border-muted` | `#f3f3f4` | neutral/150 |
+| `--color-text-heading` | `#1f2a3d` | neutral/900 |
+| `--color-text-link` | `#2a3547` | neutral/800 |
+| `--color-text-body` | `#98a4ae` | neutral/500 |
+| `--color-text-disabled` | `#616c7a` | neutral/600 |
+| `--color-dark-surface` | `#1a2537` | dark/surface |
+| `--overlay-modal` | `#00000040` | — |
+
+### Radius
+
+| Token | Valor | Qué lo usa |
+|---|---|---|
+| `sm` | 6 | badges, checkboxes, chips, lista del select |
+| `md` | 9 | botones, icon buttons, inputs, paginación, sidebar items |
+| `tw` | 12 | cards, tablas, modales, acordeones |
+| `bb` | 20 | search input |
+| `lg` | 24 | avatares grandes e imágenes |
+| `full` | 9999 | avatares circulares |
+
+### Spacing
+
+`xs 4 · sm 8 · md 12 · lg 16 · xl 20 · 2xl 24 · card 30 · 3xl 40`
+
+### Tipografía · Manrope
+
+Los estilos base del DS, cada uno con su interlineado:
+
+| Estilo | Tamaño / interlineado | Peso |
+|---|---|---|
+| H1 … H6 | 36/40 · 30/36 · 24/32 · 20/28 · 18/28 · 16/24 | SemiBold |
+| Body/Large | 15 / 22 | Regular |
+| Body/Base · Label | 14 / 20 | Regular · SemiBold |
+| Caption | 13 / 18 | Regular |
+| Chip Text | 12 / 16 | SemiBold |
+
+Más los estilos de aplicación que usan las pantallas, todos sobre la métrica de 16px:
+**Table Text** y **Table Title** (celdas y encabezados de tabla), **Tab Text** y
+**Breadcrumbs**.
+
+### Pendiente de alinear
+
+- **Sombras** — la librería define `sm · md · elevation1-4`; el código conserva
+  tres sombras heredadas del archivo de pantallas.
+- **Matriz de botones** — el DS es 6 colores × 4 tipos (Fill · Subtle · Outline ·
+  Text) × 3 tamaños; el código tiene cinco variantes sueltas.
+- **Colecciones legacy en Figma** — las pantallas todavía tienen vínculos a
+  `Colors`, `Texts`, `Spacing` y `Border radius` junto a las colecciones nuevas.
+  No afecta al código, pero conviene saberlo al comparar.
+
+---|---|---|---|
 | primary   | `#635bff` | `#635bff40` | `#635bff` |
 | secondary | `#16cdc7` | `#16cdc740` | `#1cc3bd` |
 | info      | `#46caeb` | `#46caeb40` | `#3cacc8` |

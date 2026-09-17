@@ -1,88 +1,105 @@
 /* ==========================================================================
-   Design tokens — RT · Design System Patterns
-   Figma: la97sY7XXVFYbXE1DgEW27 · página “🎨 Foundations”
+   Design tokens — RT · Design System
 
-   Los valores de color, tipografía y neutrales salen del DS.
-   Los radios y las sombras todavía vienen del archivo de pantallas “Audit”
-   y no coinciden con el DS: están marcados como pendientes más abajo.
+   Leídos directamente de las variables que consumen las pantallas
+   (Figma f9cCYZ5XuIFOE5sqKfLJsQ, ya vinculadas a la librería publicada).
+   Cada bloque refleja una colección real: Primitives/Color, Semantic/Color,
+   Radius, Spacing y los estilos de texto.
    ========================================================================== */
 
 :root {
-  /* ---- Color · Semantic Status ----------------------------------------
-     Cada color tiene tres piezas, medidas sobre los componentes del DS:
-
-       --color-X            relleno sólido (badge/botón Fill), texto blanco
-       --color-X-subtle     tinte de fondo: el color con alpha 25%
-                            (hex 40), salvo error que va al 38% (hex 61)
-       --color-on-X-subtle  texto sobre ese tinte
-
-     El texto NO siempre es el color base: en info, success y warning el DS
-     usa un tono más oscuro para que el texto se lea sobre el tinte.
-     -------------------------------------------------------------------- */
-  --color-primary: #635bff;
-  --color-primary-subtle: #635bff40;
-  --color-on-primary-subtle: #635bff;
-
-  --color-secondary: #16cdc7;
-  --color-secondary-subtle: #16cdc740;
-  --color-on-secondary-subtle: #1cc3bd;
-
-  --color-info: #46caeb;
-  --color-info-subtle: #46caeb40;
-  --color-on-info-subtle: #3cacc8;
-
-  --color-success: #36c96c;
-  /* Ojo: en el DS el tinte de success sale de #2ea95c, no del relleno
-     #36c96c. Se replica tal cual para no desalinear los badges. */
-  --color-success-subtle: #2ea95c40;
-  --color-on-success-subtle: #2ea95c;
-
-  --color-warning: #f8c20a;
-  --color-warning-subtle: #f8c20a40;
-  --color-on-warning-subtle: #d3a509;
-
-  --color-error: #ff6692;
-  --color-error-subtle: #ff669261;
-  --color-on-error-subtle: #ff6692;
-
-  /* Estados de interacción del primario. No están en el DS: derivados
-     oscureciendo el primario para hover y active. */
-  --color-primary-hover: #5249e6;
-  --color-primary-active: #4840cc;
-  /* Fondo tenue para hover de opciones e iconos (12% del primario). */
-  --color-primary-ghost: #635bff1f;
-
-  /* ---- Color · Neutrals ------------------------------------------------ */
-  --color-white: #ffffff;
+  /* ======================================================================
+     Primitives/Color
+     ====================================================================== */
+  --color-neutral-white: #ffffff;
   --color-neutral-50:  #f6f7f9;
   --color-neutral-100: #f4f7fb;
+  --color-neutral-150: #f3f3f4;
   --color-neutral-200: #eff4fa;
   --color-neutral-300: #e0e6eb;
   --color-neutral-500: #98a4ae;
+  --color-neutral-600: #616c7a;
   --color-neutral-800: #2a3547;
   --color-neutral-900: #1f2a3d;
-  --color-navy-900:    #0a2540;
 
-  /* ---- Alias semánticos sobre los neutrales ---------------------------- */
-  --color-dark: var(--color-neutral-900);
-  --color-dark-surface: var(--color-navy-900);
-  --color-text-heading: var(--color-neutral-900);
-  --color-text-body: var(--color-neutral-500);
-  --color-text-on-color: var(--color-white);
+  --color-dark-surface: #1a2537;
+  --color-dark-border:  #333f55;
 
-  --surface-default: var(--color-white);
-  --surface-page: var(--color-neutral-100);
-  --surface-header: var(--color-neutral-50);
-  --surface-muted: var(--color-neutral-50);
+  --color-violet-500: #635bff;   --color-violet-subtle: #635bff40;
+  --color-teal-500:   #16cdc7;   --color-teal-subtle:   #16cdc740;
+  --color-cyan-500:   #46caeb;   --color-cyan-subtle:   #46caeb40;
+  --color-cyan-600:   #3cacc8;
+  --color-green-500:  #36c96c;   --color-green-subtle:  #2ea95c40;
+  --color-green-600:  #2ea95c;
+  --color-amber-500:  #f8c20a;   --color-amber-subtle:  #f8c20a40;
+  --color-amber-600:  #d3a509;
+  --color-pink-500:   #ff6692;   --color-pink-subtle:   #ff669261;
+
+  /* ======================================================================
+     Semantic/Color — alias sobre los primitivos, igual que en la librería
+
+     Los -subtle son el tinte de fondo; los -on-*-subtle son el color de
+     texto que va encima. No siempre coinciden con el relleno: success usa
+     green/600, info usa cyan/600 y warning usa amber/600.
+     ====================================================================== */
+  --color-primary:            var(--color-violet-500);
+  --color-primary-subtle:     var(--color-violet-subtle);
+  --color-on-primary-subtle:  var(--color-violet-500);
+
+  --color-secondary:          var(--color-teal-500);
+  --color-secondary-subtle:   var(--color-teal-subtle);
+  --color-on-secondary-subtle: var(--color-teal-500);
+
+  --color-info:               var(--color-cyan-500);
+  --color-info-subtle:        var(--color-cyan-subtle);
+  --color-on-info-subtle:     var(--color-cyan-600);
+
+  --color-success:            var(--color-green-500);
+  --color-success-subtle:     var(--color-green-subtle);
+  --color-on-success-subtle:  var(--color-green-600);
+
+  --color-warning:            var(--color-amber-500);
+  --color-warning-subtle:     var(--color-amber-subtle);
+  --color-on-warning-subtle:  var(--color-amber-600);
+
+  --color-error:              var(--color-pink-500);
+  --color-error-subtle:       var(--color-pink-subtle);
+  --color-on-error-subtle:    var(--color-pink-500);
+
+  /* Estados de interacción del primario. No existen como variable en la
+     librería: derivados oscureciendo el primario. */
+  --color-primary-hover:  #5249e6;
+  --color-primary-active: #4840cc;
+  --color-primary-ghost:  #635bff1f;
+
+  /* ---- Superficies ---------------------------------------------------- */
+  --surface-default: var(--color-neutral-white);   /* surface/default */
+  --surface-hover:   var(--color-neutral-50);      /* surface/hover   */
+  --surface-page:    var(--color-neutral-100);     /* surface/subtle  */
+  --surface-header:  var(--color-neutral-150);     /* surface/header  */
+  --surface-muted:   var(--color-neutral-200);     /* surface/muted   */
   --surface-disabled: var(--color-neutral-200);
 
-  --border-default: var(--color-neutral-300);
-  --border-muted: var(--color-neutral-200);
+  /* ---- Bordes ---------------------------------------------------------- */
+  --border-default: var(--color-neutral-300);      /* border/default */
+  --border-muted:   var(--color-neutral-150);      /* border/muted   */
 
-  /* ---- Tipografía · Manrope --------------------------------------------
-     Los diez estilos del DS. Cada uno lleva su interlineado en px, tal como
-     está especificado (36/40, 30/36, 24/32, …).
-     -------------------------------------------------------------------- */
+  /* ---- Texto ------------------------------------------------------------ */
+  --color-text-heading:  var(--color-neutral-900); /* text/heading  */
+  --color-text-body:     var(--color-neutral-500); /* text/body     */
+  --color-text-link:     var(--color-neutral-800); /* text/link     */
+  --color-text-disabled: var(--color-neutral-600); /* text/disabled */
+  --color-text-on-color: var(--color-neutral-white);
+  --color-dark: var(--color-neutral-900);
+
+  /* ---- Overlay ---------------------------------------------------------- */
+  --overlay-modal: #00000040;
+
+  /* ======================================================================
+     Tipografía · Manrope
+     Los estilos base del DS más los estilos de aplicación que usan las
+     pantallas (Table Text, Tab Text, Breadcrumbs, Chip Text…).
+     ====================================================================== */
   --font-family: "Manrope", -apple-system, BlinkMacSystemFont, "Segoe UI",
     Roboto, "Helvetica Neue", Arial, sans-serif;
 
@@ -97,35 +114,51 @@
   --font-size-body: 14px;     --line-height-body: 20px;
   --font-size-label: 14px;    --line-height-label: 20px;
   --font-size-caption: 13px;  --line-height-caption: 18px;
+  --font-size-chip: 12px;     --line-height-chip: 16px;
+
+  /* Estilos de aplicación, todos a 16px sobre la métrica de H6 */
+  --font-size-table: var(--font-size-h6);   /* Table Text / Table Title */
+  --font-size-tab: var(--font-size-h6);     /* Tab Text                 */
+  --font-size-breadcrumb: var(--font-size-h6);
 
   --font-weight-regular: 400;
   --font-weight-medium: 500;
   --font-weight-semibold: 600;
   --font-weight-bold: 700;
 
-  /* ---- Espaciado -------------------------------------------------------- */
+  /* ======================================================================
+     Spacing
+     ====================================================================== */
   --space-xs: 4px;
   --space-sm: 8px;
   --space-md: 12px;
   --space-lg: 16px;
   --space-xl: 20px;
   --space-2xl: 24px;
-  --space-3xl: 32px;
-  --space-4xl: 40px;
+  --space-card: 30px;
+  --space-3xl: 40px;
 
-  /* ---- Radios ------------------------------------------------------------
-     PENDIENTE: el DS define sm 6 · md 9 · tw 12 · bb 20 · lg 24.
-     Estos valores siguen siendo los del archivo Audit (4 / 8 / 12 / 16).
-     -------------------------------------------------------------------- */
-  --radius-xs: 4px;
-  --radius-sm: 8px;
-  --radius-md: 12px;
-  --radius-lg: 16px;
-  --radius-pill: 999px;
+  /* ======================================================================
+     Radius
+     sm  → badges, checkboxes, chips, lista del select
+     md  → botones, icon buttons, paginación, inputs, sidebar items
+     tw  → cards, tablas, modales, acordeones
+     bb  → search input, diálogos de estado
+     lg  → avatares grandes e imágenes
+     full→ avatares circulares
+     ====================================================================== */
+  --radius-sm: 6px;
+  --radius-md: 9px;
+  --radius-tw: 12px;
+  --radius-bb: 20px;
+  --radius-lg: 24px;
+  --radius-full: 9999px;
 
-  /* ---- Sombras -----------------------------------------------------------
-     PENDIENTE: el DS define sm · md · elevation1-4.
-     -------------------------------------------------------------------- */
+  /* ======================================================================
+     Sombras
+     PENDIENTE: la librería define sm · md · elevation1-4; estas siguen
+     siendo las heredadas del archivo de pantallas.
+     ====================================================================== */
   --shadow-md: 0 2px 4px -1px #afb6c933;
   --shadow-lg: 0 8px 24px -6px #afb6c94d;
   --shadow-overlay: 0 16px 48px -12px #1f2a3d33;
