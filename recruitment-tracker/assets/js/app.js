@@ -409,6 +409,10 @@ window.VLT = (function () {
    * @param {boolean}    [cfg.selectable]  añade checkboxes
    * @param {string}     [cfg.paginationStyle="compact"] "compact" (‹ 1 2 3 ›) o
    *                                                     "full" (« ‹ 1 2 3 › »)
+   * @param {Array}      [cfg.headerGroups] fila superior de encabezado agrupado,
+   *                     p. ej. [{label:"", span:28},{label:"VA Degree Details", span:2}]
+   * @param {boolean}    [cfg.wide]        tabla ancha: scroll horizontal y vertical,
+   *                                       encabezado fijo y primera columna congelada
    * @param {Function}   [cfg.onSelection] (selectedRows) => void
    * @param {string}     [cfg.emptyText]
    */
@@ -446,12 +450,29 @@ window.VLT = (function () {
       const start = (state.page - 1) * state.pageSize;
       const pageRows = rows.slice(start, start + state.pageSize);
 
-      const head = `
+      // La primera columna de datos se congela junto a la de checkboxes.
+      const stickyAt = cfg.wide ? 0 : -1;
+      const cls = (i, extra) => {
+        const k = [];
+        if (extra) k.push(extra);
+        if (i === stickyAt) k.push("col-sticky");
+        return k.length ? ` class="${k.join(" ")}"` : "";
+      };
+
+      const groupRow = cfg.headerGroups ? `
+        <tr class="table__groups">
+          ${cfg.selectable ? '<th class="cell-check col-sticky"></th>' : ""}
+          ${cfg.headerGroups.map((g) => `
+            <th colspan="${g.span}"${g.label ? "" : ' class="is-empty"'}>${esc(g.label || "")}</th>`).join("")}
+        </tr>` : "";
+
+      const head = groupRow + `
         <tr>
-          ${cfg.selectable ? '<th class="cell-check"><input type="checkbox" data-select-all aria-label="Seleccionar todo"></th>' : ""}
-          ${cfg.columns.map((c) => `
-            <th ${c.sortable ? `data-sortable data-key="${c.key}"` : ""}
-                ${c.align === "right" ? 'style="text-align:right"' : ""}>
+          ${cfg.selectable ? '<th class="cell-check col-sticky"><input type="checkbox" data-select-all aria-label="Seleccionar todo"></th>' : ""}
+          ${cfg.columns.map((c, i) => `
+            <th${cls(i, c.align === "right" ? "is-right" : "")}
+                ${c.sortable ? `data-sortable data-key="${c.key}"` : ""}
+                ${c.width ? `style="min-width:${c.width}px"` : ""}>
               ${esc(c.label)}
               ${state.sortKey === c.key ? `<span class="sort-mark">${state.sortDir === 1 ? "▲" : "▼"}</span>` : ""}
             </th>`).join("")}
@@ -460,10 +481,10 @@ window.VLT = (function () {
       const body = pageRows.length
         ? pageRows.map((r, i) => `
             <tr data-row="${start + i}">
-              ${cfg.selectable ? `<td class="cell-check"><input type="checkbox" data-select="${esc(r.id)}"
+              ${cfg.selectable ? `<td class="cell-check col-sticky"><input type="checkbox" data-select="${esc(r.id)}"
                    ${state.selected.has(r.id) ? "checked" : ""} aria-label="Seleccionar fila"></td>` : ""}
-              ${cfg.columns.map((c) => `
-                <td ${c.align === "right" ? 'class="cell-actions"' : ""}>${c.render ? c.render(r) : esc(r[c.key] ?? "")}</td>
+              ${cfg.columns.map((c, i) => `
+                <td${cls(i, c.align === "right" ? "cell-actions" : "")}>${c.render ? c.render(r) : esc(r[c.key] ?? "")}</td>
               `).join("")}
             </tr>`).join("")
         : `<tr><td colspan="${cfg.columns.length + (cfg.selectable ? 1 : 0)}">
@@ -482,8 +503,8 @@ window.VLT = (function () {
       }
 
       cfg.mount.innerHTML = `
-        <div class="table-wrap">
-          <table class="table">
+        <div class="table-wrap${cfg.wide ? " table-wrap--wide" : ""}">
+          <table class="table${cfg.wide ? " table--wide" : ""}">
             <thead>${head}</thead>
             <tbody>${body}</tbody>
           </table>
@@ -498,6 +519,9 @@ window.VLT = (function () {
             ${full ? `<button type="button" data-nav="last"  ${state.page === pages ? "disabled" : ""} aria-label="Última página">${icon("chevronsRight", 14)}</button>` : ""}
           </div>
         </div>`;
+
+      // Las celdas pueden traer <select>; el render los recrea en cada pasada.
+      enhanceSelects(cfg.mount);
 
       // --- eventos de la vista recién dibujada ---
       $$("th[data-sortable]", cfg.mount).forEach((th) => {
@@ -549,6 +573,7 @@ window.VLT = (function () {
       search(term) { state.term = term; state.page = 1; render(); },
       setRows(rows) { cfg.rows = rows; state.page = 1; render(); },
       clearSelection() { state.selected.clear(); emitSelection(); render(); },
+      columns() { return cfg.columns; },
       selection() { return cfg.rows.filter((r) => state.selected.has(r.id)); },
       refresh: render,
     };

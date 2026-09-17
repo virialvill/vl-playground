@@ -53,6 +53,11 @@ Se puede entrar directo a una tab con `?tab=`:
 ## Estados y flujos implementados
 
 - **Tablas**: búsqueda, orden por columna (clic en el encabezado), paginación y estado vacío.
+- **Tabla de aplicaciones (31 columnas)**: scroll horizontal y vertical dentro del propio
+  contenedor, encabezado fijo al hacer scroll vertical y columna de selección + *VA Name*
+  congeladas al hacer scroll horizontal. El encabezado tiene una fila de grupo
+  (*VA Degree Details* abarca *Degree 1* y *Degree 2*). Las celdas incluyen selects,
+  fechas, checkboxes, badges, enlaces y notas largas; el CSV exporta las 31 columnas.
 - **Filtros**: tres modales distintos, todos con *Reset* y *Apply Filter* —
   dashboard (4 campos), Deals (8 campos) y Job Applications (9 campos).
 - **Tooltip** “View Deal” sobre el icono de acción de las tablas.

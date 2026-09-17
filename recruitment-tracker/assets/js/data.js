@@ -118,8 +118,23 @@ window.VLTData = (function () {
     ],
   };
 
-  /* --- Aplicaciones a un job post ---------------------------------------- */
-  const applications = Array.from({ length: 13 }, (_, i) => {
+  /* --- Aplicaciones a un job post -----------------------------------------
+     La tabla del diseño tiene 31 columnas y hace scroll horizontal y vertical.
+     Los nombres de columna respetan el texto del archivo de Figma, incluido
+     el typo de "VA Total Yeas of Experience".
+     ---------------------------------------------------------------------- */
+  const applicationOptions = {
+    currentJobStatus: ["Associated", "Available", "In Process", "Not Available"],
+    proposalNotes: ["Poor-Good", "Good", "Very Good", "Excellent"],
+    vaRate: ["$8 USD", "$10 USD", "$12 USD", "$14 USD", "$17 USD"],
+    clientRate: ["$12 USD", "$14 USD", "$17 USD", "$20 USD", "$24 USD"],
+    emailTemplate: ["Finalized Process", "Interview Invite", "Not Selected", "On Hold"],
+    otherJobStatus: ["VL Reviewing", "Active Proposal", "Associated", "Available"],
+  };
+
+  const LOREM = "Lorem ipsum dolor sit amet consectetur. Sodales feugiat euismod at habitant et aliquam.";
+
+  const applications = (() => {
     const names = [
       "Pauline Lenoir", "Carlos David Torres Alvarado", "Diego Alejandro Morales Cruz",
       "Sofia Elena Ramirez Garcia", "Mariana Ochoa Vidal", "Andrés Felipe Castaño",
@@ -127,21 +142,56 @@ window.VLTData = (function () {
       "Ricardo Nieto Salas", "Camila Herrera Bravo", "Esteban Quiroz Lara",
       "Natalia Bermúdez Cano",
     ];
-    const scores = [75, 87, 62, 91, 78, 55, 83, 69, 94, 71, 66, 88, 80];
-    const statuses = ["Completed", "Completed", "In Progress", "Completed", "Completed",
-      "Not Started", "Completed", "In Progress", "Completed", "Completed",
-      "Not Started", "Completed", "Completed"];
-    return {
+    const scores    = [75, 87, 62, 91, 78, 55, 83, 69, 94, 71, 66, 88, 80];
+    const statuses  = ["Completed", "Completed", "In Progress", "Completed", "Completed",
+                       "Not Started", "Completed", "In Progress", "Completed", "Completed",
+                       "Not Started", "Completed", "Completed"];
+    const degrees1  = ["Associate/Technical Degree (2 years in University)",
+                       "Bachelor's Degree (4 years in University)",
+                       "High School (Preparatoria/Bachillerato)"];
+    const degrees2  = ["High School (Preparatoria/Bachillerato) · No field of study provided",
+                       "Associate/Technical Degree · Software Engineering",
+                       "No field of study provided"];
+    const countries = ["Colombia", "México", "Honduras", "Guatemala", "Argentina", "Perú"];
+
+    const pick = (arr, i) => arr[i % arr.length];
+
+    return names.map((name, i) => ({
       id: "va-" + (i + 1),
-      name: names[i],
-      email: names[i].split(" ")[0].toLowerCase() + "@virtuallatinos.com",
+      name,
+      email: name.split(" ")[0].toLowerCase() + "@virtuallatinos.com",
       submitted: "11-24-2025 - 8:55, PST",
       modified: "11-24-2025 - 8:55, PST",
       assessment: "Customer Support - Entry Level",
       score: scores[i],
       status: statuses[i],
-    };
-  });
+      reportLink: "#",
+      currentJobStatus: pick(applicationOptions.currentJobStatus, i),
+      proposalNotes: pick(applicationOptions.proposalNotes, i),
+      vaActionsRequired: LOREM,
+      lastInterviewDate: "2026-08-28",
+      previouslyHired: i % 3 === 0 ? "Yes" : "No",
+      yearsExperience: (i % 8) + 1 + " Years",
+      interviewForRole: i % 2 === 0,
+      preinterviewNotes: LOREM,
+      otherJobStatus: pick(applicationOptions.otherJobStatus, i),
+      desiredRate: "$" + (7.5 + i * 0.5).toFixed(1),
+      vaRateSent: pick(applicationOptions.vaRate, i),
+      clientRateSent: pick(applicationOptions.clientRate, i),
+      selectionNotes: LOREM,
+      managerComments: LOREM,
+      pdfDone: i % 2 === 0,
+      canva: "#",
+      portfolio: "#",
+      selectionResultEmailSent: "2026-08-28",
+      afterClientInterviewTemplate: pick(applicationOptions.emailTemplate, i),
+      finalCandidateResultsDate: "2026-08-28",
+      postClientInterviewNotes: LOREM,
+      degree1: pick(degrees1, i),
+      degree2: pick(degrees2, i),
+      country: pick(countries, i),
+    }));
+  })();
 
   /* --- Perfil del candidato ---------------------------------------------- */
   const candidate = {
@@ -315,6 +365,6 @@ window.VLTData = (function () {
     currentUser, dealStages, primaryRoles, dealOwners, rtPods, agents, specialists,
     deals, dealDetail,
     applications, candidate, assessments, otherJobs, notes, agreements,
-    proposalVAs, intakeForms, options, intakeOptions,
+    proposalVAs, intakeForms, options, intakeOptions, applicationOptions,
   };
 })();

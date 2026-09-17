@@ -7,8 +7,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="assets/css/tokens.css?v=3">
-  <link rel="stylesheet" href="assets/css/app.css?v=3">
+  <link rel="stylesheet" href="assets/css/tokens.css?v=6">
+  <link rel="stylesheet" href="assets/css/app.css?v=6">
 </head>
 <body>
   <main class="page stack" id="page"></main>
@@ -79,8 +79,8 @@
     </div>
   </dialog>
 
-  <script src="assets/js/data.js?v=3"></script>
-  <script src="assets/js/app.js?v=3"></script>
+  <script src="assets/js/data.js?v=6"></script>
+  <script src="assets/js/app.js?v=6"></script>
   <script>
   (function () {
     const D = window.VLTData;
@@ -286,15 +286,37 @@
     /* --- Tabla de aplicaciones --------------------------------------------- */
     const statusTone = { Completed: "success", "In Progress": "warning", "Not Started": "neutral" };
 
+    /* --- Celdas de la tabla de aplicaciones --------------------------------
+       31 columnas, las mismas del frame "Deal > Job Application Table
+       (Assessment Based)". Los anchos salen del diseño.
+       --------------------------------------------------------------------- */
+    const O = D.applicationOptions;
+    const cellSelect = (r, field, opts) => `
+      <select class="select" data-row="${esc(r.id)}" data-field="${field}" aria-label="${field}">
+        ${opts.map((o) => `<option${r[field] === o ? " selected" : ""}>${esc(o)}</option>`).join("")}
+      </select>`;
+    const cellDate = (r, field) =>
+      `<input class="cell-date" type="date" value="${esc(r[field] || "")}" aria-label="${field}">`;
+    const cellNote = (r, field) => `<span class="cell-note">${esc(r[field] || "")}</span>`;
+    const cellCheck = (r, field) => `
+      <span class="cell-check-mark">
+        <input type="checkbox" ${r[field] ? "checked" : ""} aria-label="${field}">
+      </span>`;
+    const cellLink = (label) =>
+      `<a class="link-external" href="#">${esc(label)} ${icon("external", 13)}</a>`;
+
     const appTable = dataTable({
       mount: document.getElementById("app-table"),
       rows: D.applications,
       selectable: true,
+      wide: true,
       pageSize: 8,
       paginationStyle: "full",
       searchFn: (r, t) => (r.name + " " + r.email).toLowerCase().includes(t),
+      // "VA Degree Details" agrupa las dos columnas de estudios.
+      headerGroups: [{ label: "", span: 28 }, { label: "VA Degree Details", span: 2 }, { label: "", span: 1 }],
       columns: [
-        { key: "name", label: "VA Name", sortable: true, render: (r) => `
+        { key: "name", label: "VA Name", sortable: true, width: 300, render: (r) => `
           <div style="display:flex;align-items:center;gap:10px">
             ${avatar("", "")}
             <div>
@@ -302,14 +324,56 @@
               <div class="muted text-xs">${esc(r.email)}</div>
             </div>
           </div>` },
-        { key: "submitted", label: "Original Submission Date" },
-        { key: "modified",  label: "Last Modified Date" },
-        { key: "assessment", label: "Assessment Title", sortable: true },
-        { key: "score", label: "Assessment Score", sortable: true, render: (r) => `${r.score}%` },
-        { key: "status", label: "Assessment Status", sortable: true,
+        { key: "submitted",  label: "Original Submission Date", width: 219 },
+        { key: "modified",   label: "Last Modified Date", width: 196 },
+        { key: "assessment", label: "Assessment Title", sortable: true, width: 263 },
+        { key: "score", label: "Assessment Score", sortable: true, width: 180,
+          render: (r) => `${r.score}%` },
+        { key: "status", label: "Assessment Status", sortable: true, width: 171,
           render: (r) => badge(r.status, statusTone[r.status] || "neutral") },
-        { key: "report", label: "Assessment Report Link",
-          render: () => `<a class="link-external" href="#">View Report ${icon("external", 13)}</a>` },
+        { key: "reportLink", label: "Assessment Report Link", width: 275,
+          render: () => cellLink("View Report") },
+        { key: "currentJobStatus", label: "Current Job Status", width: 332,
+          render: (r) => cellSelect(r, "currentJobStatus", O.currentJobStatus) },
+        { key: "proposalNotes", label: "Proposal Notes", width: 332,
+          render: (r) => cellSelect(r, "proposalNotes", O.proposalNotes) },
+        { key: "vaActionsRequired", label: "VA Actions Required", width: 344,
+          render: (r) => cellNote(r, "vaActionsRequired") },
+        { key: "lastInterviewDate", label: "Last Interview Date", width: 324,
+          render: (r) => cellDate(r, "lastInterviewDate") },
+        { key: "previouslyHired", label: "Previously Hired", width: 150 },
+        { key: "yearsExperience", label: "VA Total Yeas of Experience", width: 213,
+          render: (r) => badge(r.yearsExperience, "primary") },
+        { key: "interviewForRole", label: "Interview for Role", width: 180,
+          render: (r) => cellCheck(r, "interviewForRole") },
+        { key: "preinterviewNotes", label: "Preinterview Notes", width: 344,
+          render: (r) => cellNote(r, "preinterviewNotes") },
+        { key: "otherJobStatus", label: "Other Job Status", width: 180,
+          render: (r) => badge(r.otherJobStatus, "info") },
+        { key: "desiredRate", label: "Desired Rate", width: 150 },
+        { key: "vaRateSent", label: "VA Rate Sent", width: 350,
+          render: (r) => cellSelect(r, "vaRateSent", O.vaRate) },
+        { key: "clientRateSent", label: "Client Rate Sent", width: 343,
+          render: (r) => cellSelect(r, "clientRateSent", O.clientRate) },
+        { key: "selectionNotes", label: "Selection Notes", width: 344,
+          render: (r) => cellNote(r, "selectionNotes") },
+        { key: "managerComments", label: "Manager Comments", width: 344,
+          render: (r) => cellNote(r, "managerComments") },
+        { key: "pdfDone", label: "PDF Done", width: 166,
+          render: (r) => cellCheck(r, "pdfDone") },
+        { key: "canva", label: "Canva", width: 275, render: () => cellLink("Link") },
+        { key: "portfolio", label: "Portfolio Link", width: 275, render: () => cellLink("Link") },
+        { key: "selectionResultEmailSent", label: "Selection Result Email Sent", width: 339,
+          render: (r) => cellDate(r, "selectionResultEmailSent") },
+        { key: "afterClientInterviewTemplate", label: "After Client Interview Email Template", width: 339,
+          render: (r) => cellSelect(r, "afterClientInterviewTemplate", O.emailTemplate) },
+        { key: "finalCandidateResultsDate", label: "Final Candidate Results Email Template", width: 339,
+          render: (r) => cellDate(r, "finalCandidateResultsDate") },
+        { key: "postClientInterviewNotes", label: "Post client Interview Notes", width: 344,
+          render: (r) => cellNote(r, "postClientInterviewNotes") },
+        { key: "degree1", label: "Degree 1", width: 344 },
+        { key: "degree2", label: "Degree 2", width: 307 },
+        { key: "country", label: "Country of Origin", width: 180 },
       ],
       onSelection(sel) {
         const bar = document.getElementById("bulk-bar");
@@ -330,8 +394,13 @@
       appTable.clearSelection();
     });
     document.getElementById("download-csv").addEventListener("click", () => {
-      const rows = [["VA Name", "Email", "Assessment", "Score", "Status"]]
-        .concat(D.applications.map((r) => [r.name, r.email, r.assessment, r.score + "%", r.status]));
+      // Exporta exactamente las columnas de la tabla, en el mismo orden.
+      const cols = appTable.columns();
+      const rows = [["Email"].concat(cols.map((c) => c.label))]
+        .concat(D.applications.map((r) => [r.email].concat(cols.map((c) => {
+          const v = r[c.key];
+          return typeof v === "boolean" ? (v ? "Yes" : "No") : (v ?? "");
+        }))));
       const csv = rows.map((r) => r.map((c) => `"${String(c).replace(/"/g, '""')}"`).join(",")).join("\n");
       const url = URL.createObjectURL(new Blob([csv], { type: "text/csv;charset=utf-8" }));
       const a = Object.assign(document.createElement("a"), { href: url, download: "job-applications.csv" });

@@ -1077,3 +1077,102 @@ a:hover { text-decoration: underline; }
 
 /* En la fila de fecha/hora el select va a ancho fijo. */
 .datetime-row .select-wrap { flex: 0 0 84px; }
+
+/* --------------------------------------------------------------------------
+   24. Tabla ancha — scroll horizontal y vertical
+   La tabla de aplicaciones tiene 31 columnas (~8.400px). El contenedor hace
+   scroll en los dos ejes; el encabezado queda fijo arriba y la columna de
+   selección + VA Name quedan fijas a la izquierda para no perder la referencia
+   de qué fila se está leyendo.
+   -------------------------------------------------------------------------- */
+.table-wrap--wide {
+  max-height: min(70vh, 720px);
+  overflow: auto;
+  overscroll-behavior: contain;
+}
+
+.table--wide { min-width: max-content; }
+
+/* Encabezado fijo. La fila de grupos va arriba y la de columnas debajo. */
+.table--wide thead th {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+}
+.table--wide thead .table__groups th {
+  z-index: 3;
+  height: 36px;
+  padding: var(--space-sm) var(--space-lg);
+  border-bottom: 1px solid var(--border-default);
+  text-align: center;
+}
+.table--wide thead .table__groups + tr th { top: 36px; }
+/* Las celdas de grupo vacías no deben leerse como una banda aparte. */
+.table--wide thead .table__groups th.is-empty {
+  background: var(--surface-header);
+  border-bottom: 0;
+}
+
+/* Columnas congeladas a la izquierda. */
+.table--wide .col-sticky {
+  position: sticky;
+  left: 0;
+  z-index: 1;
+  background: var(--surface-default);
+}
+.table--wide .cell-check.col-sticky { left: 0; }
+.table--wide .col-sticky:not(.cell-check) { left: 44px; }
+.table--wide thead .col-sticky {
+  z-index: 4;
+  background: var(--surface-header);
+}
+/* Borde que separa la zona fija de la que se desplaza. */
+.table--wide .col-sticky:not(.cell-check)::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 1px;
+  background: var(--border-default);
+}
+.table--wide tbody tr:hover .col-sticky { background: var(--surface-hover); }
+
+/* Celdas de la tabla ancha: alineadas arriba, sin romper palabras. */
+.table--wide td {
+  vertical-align: top;
+  min-width: 150px;
+}
+.table--wide th { white-space: nowrap; }
+
+/* Controles dentro de las celdas */
+.cell-note {
+  display: block;
+  min-width: 300px;
+  max-width: 340px;
+  color: var(--color-text-body);
+  font-size: var(--font-size-caption);
+  line-height: var(--line-height-caption);
+}
+.cell-input,
+.cell-date {
+  width: 100%;
+  min-width: 150px;
+  min-height: 34px;
+  padding: 6px var(--space-sm);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  background: var(--surface-default);
+  font-size: var(--font-size-caption);
+}
+.cell-check-mark { display: inline-flex; align-items: center; justify-content: center; }
+.cell-check-mark input { accent-color: var(--color-primary); width: 16px; height: 16px; }
+.table--wide .select-wrap { min-width: 180px; }
+.table--wide .select-button { min-height: 34px; font-size: var(--font-size-caption); }
+
+/* En pantallas chicas el alto máximo estorba más de lo que ayuda. */
+@media (max-width: 720px) {
+  .table-wrap--wide { max-height: none; }
+  .table--wide .col-sticky { position: static; }
+  .table--wide .col-sticky:not(.cell-check)::after { display: none; }
+}
