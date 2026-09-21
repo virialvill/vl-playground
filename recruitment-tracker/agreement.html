@@ -7,32 +7,34 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="assets/css/tokens.css?v=10">
-  <link rel="stylesheet" href="assets/css/app.css?v=10">
+  <link rel="stylesheet" href="assets/css/tokens.css?v=11">
+  <link rel="stylesheet" href="assets/css/app.css?v=11">
 </head>
 <body>
   <main class="page stack" id="page"></main>
 
   <!-- 2.1.1 Back Confirmation Dialog -->
+  <!-- 2.1.1 Back Confirmation Dialog -->
   <dialog class="modal modal--sm" id="back-dialog">
     <div class="modal__inner">
-      <div class="modal__header"><h2 class="modal__title">Leave agreement creation?</h2></div>
-      <p class="muted">Used when abandoning an in-progress selection step. Your selection won’t be saved.</p>
+      <div class="modal__header"><h2 class="modal__title">Cancel Agreement Setup?</h2></div>
+      <p class="muted">Leaving now will clear your VA selection. You can start the process again anytime.</p>
       <div class="modal__footer">
-        <button class="btn btn--neutral" type="button" data-close>Stay here</button>
-        <button class="btn btn--danger" type="button" id="confirm-back">Leave</button>
+        <button class="btn btn--outline" type="button" data-close>Go Back</button>
+        <button class="btn btn--primary" type="button" id="confirm-back">Exit Setup</button>
       </div>
     </div>
   </dialog>
 
   <!-- 2.2.1 Confirmation Dialog -->
-  <dialog class="modal modal--sm" id="confirm-dialog">
+  <!-- 2.2.1 Confirmation Dialog: confirma descartar, no crear -->
+  <dialog class="modal modal--sm" id="discard-dialog">
     <div class="modal__inner">
-      <div class="modal__header"><h2 class="modal__title">Create this agreement?</h2></div>
-      <p class="muted">Used when the user might lose unsaved or in-progress data. Review the details before continuing.</p>
+      <div class="modal__header"><h2 class="modal__title">Discard Agreement Setup?</h2></div>
+      <p class="muted">Are you sure you want to exit? Any changes made so far will be lost and the agreement will not be created.</p>
       <div class="modal__footer">
-        <button class="btn btn--neutral" type="button" data-close>Review again</button>
-        <button class="btn btn--primary" type="button" id="confirm-create">Create Agreement</button>
+        <button class="btn btn--outline" type="button" data-close>Go Back</button>
+        <button class="btn btn--primary" type="button" id="confirm-discard">Exit Setup</button>
       </div>
     </div>
   </dialog>
@@ -50,8 +52,8 @@
     </div>
   </dialog>
 
-  <script src="assets/js/data.js?v=10"></script>
-  <script src="assets/js/app.js?v=10"></script>
+  <script src="assets/js/data.js?v=11"></script>
+  <script src="assets/js/app.js?v=11"></script>
   <script>
   (function () {
     const D = window.VLTData;
@@ -150,7 +152,7 @@
               ${field("Client Rate 10 - 20 Hrs", money("client1020", "10.00"))}
               ${field("Client Rate 21 - 31 Hrs", money("client2131", "9.00"))}
               ${field("Client Rate 31 - 40 Hrs", money("client3140", "17"))}
-              ${field("VA Rate 10 - 20 Hrs", money("va1020", "10.00"))}
+              ${field("Va Rate 10 - 20 Hrs", money("va1020", "10.00"))}
               ${field("VA Rate 21 - 31 Hrs", money("va2131", "9.00"))}
               ${field("VA Rate 31 - 40 Hrs", money("va3140", "17"))}
             </div>
@@ -196,7 +198,7 @@
           <div class="form-section">
             <h3 class="form-section__title">Administrative Details</h3>
             <div class="form-grid form-grid--2">
-              ${field("SAM Email", '<input class="input" name="samemail" value="sofia.hernandez@virtuallatinos.com" disabled>')}
+              ${field("SAM Email", '<input class="input" name="samemail" value="estefania.rodas@virtuallatinos.com" disabled>')}
               ${field("SAM ID", '<input class="input" name="samid" value="4431" disabled>')}
               ${field("Proposify Template", '<select class="select" name="proposify"><option value="">Select an option</option><option>Standard</option><option>Enterprise</option></select>', { required: false })}
               ${field("Signwell Template", '<input class="input" name="signwell" value="Sales Assistants">')}
@@ -269,7 +271,8 @@
       }
 
       if (step === 2) {
-        document.getElementById("cancel-step2").addEventListener("click", backDialog.open);
+        // El paso 2 confirma con 2.2.1, que habla de descartar cambios.
+        document.getElementById("cancel-step2").addEventListener("click", discardDialog.open);
         document.getElementById("create-agreement").addEventListener("click", () => {
           const form = document.getElementById("agreement-form");
           const missing = Array.from(form.querySelectorAll(".field")).filter((f) => {
@@ -282,14 +285,14 @@
             missing[0].querySelector("input, select, textarea").focus();
             return;
           }
-          confirmDialog.open();
+          submitAgreement();
         });
       }
     }
 
     /* --- Diálogos ------------------------------------------------------------- */
     const backDialog = modal("back-dialog");
-    const confirmDialog = modal("confirm-dialog");
+    const discardDialog = modal("discard-dialog");
     const errorDialog = modal("error-dialog");
 
     document.getElementById("confirm-back").addEventListener("click", () => {
@@ -314,9 +317,9 @@
       }, 1100);
     }
 
-    document.getElementById("confirm-create").addEventListener("click", () => {
-      confirmDialog.close();
-      submitAgreement();
+    document.getElementById("confirm-discard").addEventListener("click", () => {
+      discardDialog.close();
+      location.href = `deal.html?id=${encodeURIComponent(deal.id)}&tab=agreement`;
     });
     document.getElementById("retry-create").addEventListener("click", () => {
       errorDialog.close();

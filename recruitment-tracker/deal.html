@@ -7,8 +7,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="assets/css/tokens.css?v=10">
-  <link rel="stylesheet" href="assets/css/app.css?v=10">
+  <link rel="stylesheet" href="assets/css/tokens.css?v=11">
+  <link rel="stylesheet" href="assets/css/app.css?v=11">
 </head>
 <body>
   <main class="page stack" id="page"></main>
@@ -65,6 +65,18 @@
     </form>
   </dialog>
 
+  <!-- 2.0 Agreement Creation 1st Time · variante sin VAs elegibles -->
+  <dialog class="modal modal--sm" id="no-vas-dialog">
+    <div class="modal__inner">
+      <div class="modal__header"><h2 class="modal__title">No elegible VAs found</h2></div>
+      <p class="muted">There are no VAs with status “Selected” to create an agreement. Please contact the Recruitment Team for assistance</p>
+      <div class="modal__footer">
+        <div></div>
+        <button class="btn btn--primary" type="button" data-close>Close</button>
+      </div>
+    </div>
+  </dialog>
+
   <!-- Confirmación de cierre de job post -->
   <dialog class="modal modal--sm" id="close-job">
     <div class="modal__inner">
@@ -79,8 +91,8 @@
     </div>
   </dialog>
 
-  <script src="assets/js/data.js?v=10"></script>
-  <script src="assets/js/app.js?v=10"></script>
+  <script src="assets/js/data.js?v=11"></script>
+  <script src="assets/js/app.js?v=11"></script>
   <script>
   (function () {
     const D = window.VLTData;
@@ -237,8 +249,23 @@
         </div>
       </div>`;
 
-    /* --- Tab 5: Agreement Creation ----------------------------------------- */
-    const agreementsPanel = `
+    /* --- Tab 5: Agreement Creation -----------------------------------------
+       Dos estados: "2.0 Agreement Creation 1st Time" cuando el deal todavía
+       no tiene agreements, y la tabla cuando ya hay alguno.
+       --------------------------------------------------------------------- */
+    const hayAgreements = D.agreements.length > 0;
+
+    const agreementsEmpty = `
+      <div class="card card--pad">
+        <div class="empty-state">
+          <div class="empty-state__art">${emptyArt}</div>
+          <p class="empty-state__title">No agreement has been created for this position.</p>
+          <p class="empty-state__text">Start by adding one to define the role and begin the matching process.</p>
+          <button class="btn btn--primary" type="button" id="create-agreement">Create Agreement</button>
+        </div>
+      </div>`;
+
+    const agreementsTable = `
       <div class="card card--pad">
         <div class="table-toolbar">
           <div class="field">
@@ -248,10 +275,12 @@
             </span>
           </div>
           <div class="table-toolbar__spacer"></div>
-          <a class="btn btn--primary" href="agreement.html?id=${esc(deal.id)}">Create Agreement</a>
+          <button class="btn btn--primary" type="button" id="create-agreement">Create Agreement</button>
         </div>
         <div id="agr-table"></div>
       </div>`;
+
+    const agreementsPanel = hayAgreements ? agreementsTable : agreementsEmpty;
 
     /* --- Montaje ------------------------------------------------------------ */
     const TABS = [
@@ -437,8 +466,9 @@
     });
 
     /* --- Tabla de agreements ------------------------------------------------ */
-    const agrTable = dataTable({
-      mount: document.getElementById("agr-table"),
+    const agrMount = document.getElementById("agr-table");
+    const agrTable = agrMount && dataTable({
+      mount: agrMount,
       rows: D.agreements.map((a, i) => ({ id: "agr-" + i, ...a })),
       pageSize: 10,
       searchFn: (r, t) => (r.name + " " + r.legalName).toLowerCase().includes(t),
@@ -451,8 +481,14 @@
       ],
       emptyText: "No agreements yet for this deal.",
     });
-    document.getElementById("agr-search")
-      .addEventListener("input", (e) => agrTable.search(e.target.value));
+    const agrSearch = document.getElementById("agr-search");
+    if (agrSearch) agrSearch.addEventListener("input", (e) => agrTable.search(e.target.value));
+
+    /* --- Create Agreement: si no hay VAs elegibles, avisa (variante de 2.0) --- */
+    document.getElementById("create-agreement").addEventListener("click", () => {
+      if (D.proposalVAs.length === 0) { modal("no-vas-dialog").open(); return; }
+      location.href = `agreement.html?id=${encodeURIComponent(deal.id)}`;
+    });
 
     /* --- Cierre del job post ------------------------------------------------ */
     const closeBtn = document.getElementById("close-job-btn");
