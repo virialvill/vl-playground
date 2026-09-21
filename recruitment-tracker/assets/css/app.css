@@ -768,22 +768,90 @@ a:hover { text-decoration: underline; }
 /* --------------------------------------------------------------------------
    17. Selección tipo radio-card (Select VA)
    -------------------------------------------------------------------------- */
-.choice-list { display: grid; gap: var(--space-md); max-width: 560px; margin: 0 auto; }
+/* Componente "List Item / VA Select" del DS.
+   Medidas tomadas del frame 2.1 Select VA: fila 632x74, radio 9, padding 12,
+   gap 12; avatar 50 con icono de 24; control de radio de 18 con borde de 1.5
+   y punto interior de 6. El <input> real se conserva oculto para que el
+   teclado y el formulario sigan funcionando. */
+.choice-list { display: grid; gap: var(--space-md); max-width: 632px; margin: 0 auto; }
+
 .choice {
   display: flex;
   align-items: center;
   gap: var(--space-md);
-  padding: var(--space-md) var(--space-lg);
-  border: 1px solid var(--border-default);
+  padding: var(--space-md);
   border-radius: var(--radius-md);
   background: var(--surface-default);
+  box-shadow: inset 0 0 0 1px var(--border-default);
   cursor: pointer;
-  transition: background var(--transition-fast), border-color var(--transition-fast), color var(--transition-fast);
+  transition: background var(--transition-fast), box-shadow var(--transition-fast);
 }
-.choice:hover { border-color: var(--color-primary); }
-.choice input { margin-left: auto; accent-color: var(--color-primary); width: 16px; height: 16px; }
-.choice[data-selected="true"] { background: var(--color-primary); border-color: var(--color-primary); color: var(--color-neutral-white); }
-.choice[data-selected="true"] .avatar { background: #ffffff33; color: var(--color-neutral-white); }
+
+.choice__input {
+  position: absolute;
+  width: 1px; height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.choice__avatar {
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+  width: 50px; height: 50px;
+  border: 2px solid transparent;
+  border-radius: var(--radius-full);
+  background: var(--surface-muted);
+  color: var(--color-text-body);
+}
+
+.choice__name {
+  flex: 1;
+  min-width: 0;
+  font-size: var(--font-size-body);
+  line-height: var(--line-height-body);
+  color: var(--color-text-heading);
+}
+
+.choice__radio {
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+  width: 18px; height: 18px;
+  border: 1.5px solid var(--border-default);
+  border-radius: var(--radius-full);
+  transition: border-color var(--transition-fast);
+}
+.choice__radio::after {
+  content: "";
+  width: 6px; height: 6px;
+  border-radius: var(--radius-full);
+  background: transparent;
+  transition: background var(--transition-fast);
+}
+
+/* Hover: fondo lila, borde y anillo en morado. */
+.choice:hover {
+  background: var(--color-primary-subtle);
+  box-shadow: inset 0 0 0 1px var(--color-primary);
+}
+.choice:hover .choice__radio { border-color: var(--color-primary); }
+
+/* Seleccionado: fondo morado sólido, todo en blanco y punto relleno. */
+.choice[data-selected="true"] {
+  background: var(--color-primary);
+  box-shadow: none;
+}
+.choice[data-selected="true"] .choice__name { color: var(--color-neutral-white); }
+.choice[data-selected="true"] .choice__avatar { border-color: var(--color-neutral-white); }
+.choice[data-selected="true"] .choice__radio { border-color: var(--color-neutral-white); }
+.choice[data-selected="true"] .choice__radio::after { background: var(--color-neutral-white); }
+
+/* El foco de teclado se dibuja sobre la fila, no sobre el input oculto. */
+.choice:has(.choice__input:focus-visible) {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
 
 /* --------------------------------------------------------------------------
    18. Notas / tarjetas sueltas

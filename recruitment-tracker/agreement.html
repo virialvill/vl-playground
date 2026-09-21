@@ -7,8 +7,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="assets/css/tokens.css?v=8">
-  <link rel="stylesheet" href="assets/css/app.css?v=8">
+  <link rel="stylesheet" href="assets/css/tokens.css?v=10">
+  <link rel="stylesheet" href="assets/css/app.css?v=10">
 </head>
 <body>
   <main class="page stack" id="page"></main>
@@ -50,8 +50,8 @@
     </div>
   </dialog>
 
-  <script src="assets/js/data.js?v=8"></script>
-  <script src="assets/js/app.js?v=8"></script>
+  <script src="assets/js/data.js?v=10"></script>
+  <script src="assets/js/app.js?v=10"></script>
   <script>
   (function () {
     const D = window.VLTData;
@@ -103,13 +103,15 @@
         <div class="choice-list" role="radiogroup" aria-label="VA">
           ${D.proposalVAs.map((va) => `
             <label class="choice" data-selected="${va.id === selectedVA.id}">
-              <span class="avatar">${icon("user", 16)}</span>
-              <span>${esc(va.name)}</span>
-              <input type="radio" name="va" value="${esc(va.id)}" ${va.id === selectedVA.id ? "checked" : ""}>
+              <input class="choice__input" type="radio" name="va" value="${esc(va.id)}"
+                     ${va.id === selectedVA.id ? "checked" : ""}>
+              <span class="choice__avatar">${icon("user", 24)}</span>
+              <span class="choice__name">${esc(va.name)}</span>
+              <span class="choice__radio" aria-hidden="true"></span>
             </label>`).join("")}
         </div>
 
-        <div style="display:flex;justify-content:space-between;gap:12px;max-width:560px;margin:32px auto 0">
+        <div style="display:flex;justify-content:space-between;gap:12px;max-width:632px;margin:32px auto 0">
           <button class="btn btn--outline" type="button" id="cancel-step1">Cancel</button>
           <button class="btn btn--primary" type="button" id="next-step1">Next</button>
         </div>
